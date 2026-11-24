@@ -1,0 +1,1692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Deutsch üben: nouns, articles and verbs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Noto+Sans+Bengali:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF1F6; --surface:#FFFFFF; --ink:#18202E; --muted:#5A6577; --line:#D5DBE5;
+  --der:#2453C9; --die:#C8323F; --das:#1A8A57; --verb:#B8640B;
+  --der-soft:#E3EAFB; --die-soft:#FBE5E7; --das-soft:#E1F3EA; --verb-soft:#FBEEDD;
+  --focus:#E0A100;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#121722; --surface:#1B2230; --ink:#E9EDF4; --muted:#9AA5B8; --line:#2E3747;
+    --der:#7C9EF5; --die:#F27984; --das:#5CCB95; --verb:#F0A656;
+    --der-soft:#1E2A47; --die-soft:#3A1E24; --das-soft:#173226; --verb-soft:#3A2A16;
+    --focus:#F2C14E; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121722; --surface:#1B2230; --ink:#E9EDF4; --muted:#9AA5B8; --line:#2E3747;
+  --der:#7C9EF5; --die:#F27984; --das:#5CCB95; --verb:#F0A656;
+  --der-soft:#1E2A47; --die-soft:#3A1E24; --das-soft:#173226; --verb-soft:#3A2A16;
+  --focus:#F2C14E; color-scheme:dark;
+}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:17px;line-height:1.5}
+.bn{font-family:"Noto Sans Bengali","Bricolage Grotesque",system-ui,sans-serif}
+.wrap{max-width:760px;margin:0 auto;padding:20px 18px 60px}
+header{margin-bottom:18px}
+.logo{font-weight:800;font-size:clamp(32px,7vw,46px);line-height:1;letter-spacing:-0.025em;margin:0}
+.flag{display:flex;gap:4px;margin:10px 0 0}
+.flag i{display:block;height:5px;width:34px;border-radius:3px}
+.flag i:nth-child(1){background:var(--der)} .flag i:nth-child(2){background:var(--die)} .flag i:nth-child(3){background:var(--das)} .flag i:nth-child(4){background:var(--verb)}
+.sub{color:var(--muted);margin:10px 0 0;font-size:15px}
+/* modules */
+.mods{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:18px 0 0}
+.mod{font:inherit;text-align:left;border:2px solid var(--line);background:var(--surface);color:var(--ink);border-radius:16px;padding:12px 14px;cursor:pointer;display:flex;flex-direction:column;gap:2px}
+.mod strong{font-size:18px;letter-spacing:-0.01em}
+.mod span{font-size:14px;color:var(--muted)}
+.mod[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 -5px 0 var(--accent,var(--ink))}
+.mod.soon{border-style:dashed;cursor:default;opacity:.7}
+.mod[data-mod="nouns"]{--accent:var(--der)} .mod[data-mod="verbs"]{--accent:var(--verb)}
+.subnav{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 18px}
+.subnav button{font:inherit;font-size:15px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:7px 16px;border-radius:999px;cursor:pointer}
+.subnav button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px}
+h2{font-size:22px;margin:0 0 4px;font-weight:800;letter-spacing:-0.01em}
+.field{margin-top:22px}
+.field > p{margin:0 0 8px;font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:inherit;font-size:15px;border:1.5px solid var(--line);background:transparent;color:var(--ink);padding:8px 14px;border-radius:12px;cursor:pointer}
+.chip[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.chip small{opacity:.7}
+.chiplabel{flex-basis:100%;font-size:14px;font-weight:600;color:var(--muted);margin:12px 0 0}
+.chiplabel small{font-weight:400}
+.rulehint{margin-top:12px;padding:12px 14px;border-radius:12px;background:var(--bg);border-left:5px solid var(--line)}
+.rulehint.r-der{border-left-color:var(--der)} .rulehint.r-die{border-left-color:var(--die)} .rulehint.r-das{border-left-color:var(--das)} .rulehint.r-verb{border-left-color:var(--verb)}
+.rulehint p{margin:2px 0;font-size:15.5px}
+.rulehint .rh-title{font-weight:600}
+.rulehint .rh-tag{font-weight:800}
+.rulehint small{color:var(--muted);font-weight:400}
+.rtag{display:inline-block;font-size:13px;border:1px solid var(--line);border-radius:999px;padding:1px 9px;margin:2px 4px 2px 0;color:var(--muted);white-space:nowrap}
+.rtag.r-der{color:var(--der);border-color:var(--der)} .rtag.r-die{color:var(--die);border-color:var(--die)} .rtag.r-das{color:var(--das);border-color:var(--das)} .rtag.r-verb{color:var(--verb);border-color:var(--verb)}
+.rtag.exc{border-style:dashed}
+.section-title{font-size:22px;font-weight:800;margin:30px 0 0;letter-spacing:-0.01em}
+.section-sub{color:var(--muted);margin:2px 0 0;font-size:15px}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px}
+.btn{font:inherit;font-weight:600;font-size:16px;border:none;border-radius:12px;padding:12px 20px;cursor:pointer;background:var(--ink);color:var(--bg)}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.small{font-size:15px;padding:9px 14px}
+.hint{color:var(--muted);font-size:14px;margin-top:10px}
+/* quiz */
+.topbar{display:flex;justify-content:space-between;align-items:center;font-size:15px;color:var(--muted);margin-bottom:10px}
+.bar{height:6px;background:var(--line);border-radius:6px;overflow:hidden;margin-bottom:18px}
+.bar i{display:block;height:100%;background:var(--ink);transition:width .25s}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:30px 22px 24px}
+.qtype{color:var(--muted);font-size:15px;margin:0}
+.word{font-weight:800;font-size:clamp(38px,10vw,64px);line-height:1.05;letter-spacing:-0.025em;margin:10px 0 6px;word-break:break-word}
+.word.mid{font-size:clamp(30px,8vw,48px)}
+.word.small{font-size:clamp(22px,5.5vw,30px);line-height:1.25;letter-spacing:-0.01em}
+.pron{color:var(--muted);font-weight:600}
+.slot{display:inline-block;min-width:2.6em;border-bottom:5px solid var(--line);margin-right:.25em;text-align:center;color:var(--muted);transition:color .2s,border-color .2s}
+.gloss{color:var(--muted);margin:0}
+.speak{font:inherit;font-size:15px;display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--line);background:transparent;color:var(--ink);border-radius:999px;padding:6px 14px;cursor:pointer;margin:4px 0 10px}
+.speak:hover{border-color:var(--ink)}
+.speak.mini{padding:5px 8px;margin:0}
+.speak svg,.ex svg{width:16px;height:16px;flex:none;vertical-align:-3px}
+.speak.playing,.ex.playing{border-color:var(--focus);color:var(--focus)}
+.opts{display:grid;gap:10px;margin-top:24px}
+.opts.three{grid-template-columns:repeat(3,1fr)}
+.opts.two{grid-template-columns:repeat(2,1fr)}
+.opt{font:inherit;font-size:17px;text-align:left;border:2px solid var(--line);background:var(--surface);color:var(--ink);padding:14px 16px;border-radius:14px;cursor:pointer;display:flex;gap:10px;align-items:center}
+.opt kbd{font:inherit;font-size:12px;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:0 6px}
+.opts.three .opt,.opts.two .opt{justify-content:center;font-size:clamp(20px,5vw,26px);font-weight:800;padding:18px 8px;flex-direction:column;gap:4px}
+.opt.a-der{color:var(--der)} .opt.a-die{color:var(--die)} .opt.a-das{color:var(--das)}
+.opt:hover:not(:disabled){border-color:var(--ink)}
+.opt:disabled{cursor:default}
+.opt.right{border-color:var(--das);background:var(--das-soft)}
+.opt.wrong{border-color:var(--die);background:var(--die-soft)}
+.opt.dim{opacity:.45}
+.feedback{margin-top:20px;padding:16px 18px;border-radius:14px;border:1.5px solid var(--line)}
+.feedback.ok{border-color:var(--das)} .feedback.no{border-color:var(--die)}
+.feedback .verdict{font-weight:800;margin:0 0 4px}
+.feedback.ok .verdict{color:var(--das)} .feedback.no .verdict{color:var(--die)}
+.feedback p{margin:4px 0}
+.tip{color:var(--muted);font-size:15px}
+.art-der{color:var(--der);font-weight:800} .art-die{color:var(--die);font-weight:800} .art-das{color:var(--das);font-weight:800}
+.vb{color:var(--verb);font-weight:800}
+/* conjugation */
+.conj{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px 14px;margin:8px 0;font-size:15.5px}
+.conj span b{font-weight:600;color:var(--muted);margin-right:4px}
+.conj .hl{background:var(--verb-soft);border-radius:6px;padding:0 4px;margin:0 -4px}
+@media (max-width:480px){.conj{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* results */
+.score{font-weight:800;font-size:clamp(56px,14vw,88px);line-height:1;letter-spacing:-0.03em;margin:6px 0}
+.miss{list-style:none;padding:0;margin:16px 0 0}
+.miss li{padding:10px 0;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.miss li span:last-child{color:var(--muted)}
+/* list */
+.search{width:100%;font:inherit;padding:12px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink)}
+.group h3{font-size:17px;margin:26px 0 6px}
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:16px}
+td,th{padding:8px 6px;border-top:1px solid var(--line);vertical-align:top;text-align:left}
+th{font-weight:600;color:var(--muted);font-size:14px}
+td:first-child{white-space:nowrap}
+table.mini{margin:8px 0 12px;font-size:15.5px}
+table.mini td:first-child{color:var(--ink)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:15px;margin-top:8px}
+details.vrow{border-top:1px solid var(--line)}
+details.vrow summary{list-style:none;cursor:pointer;padding:12px 4px;display:grid;grid-template-columns:auto 1fr auto;gap:4px 12px;align-items:baseline}
+details.vrow summary::-webkit-details-marker{display:none}
+details.vrow summary .vinf{font-weight:800;font-size:18px}
+details.vrow summary .vmean{color:var(--muted);font-size:15px}
+details.vrow summary .vforms{font-size:14.5px;color:var(--muted);white-space:nowrap}
+details.vrow[open] summary .vinf{color:var(--verb)}
+details.vrow .vbody{padding:0 4px 16px}
+@media (max-width:520px){details.vrow summary{grid-template-columns:1fr}details.vrow summary .vforms{white-space:normal}}
+/* rules & lessons */
+.golden{background:var(--ink);color:var(--bg);border-radius:18px;padding:20px 22px}
+.golden h2{color:var(--bg)}
+.golden p{margin:6px 0 0}
+.rgroup{font-size:21px;font-weight:800;margin:32px 0 4px;letter-spacing:-0.01em}
+.rgroup-sub{color:var(--muted);margin:0 0 12px;font-size:15px}
+.rule{background:var(--surface);border:1px solid var(--line);border-left:6px solid var(--line);border-radius:16px;padding:18px 18px 16px;margin-bottom:12px}
+.rule.r-der{border-left-color:var(--der)} .rule.r-die{border-left-color:var(--die)} .rule.r-das{border-left-color:var(--das)} .rule.r-verb{border-left-color:var(--verb)}
+.rhead{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.badge{font-weight:800;font-size:24px;letter-spacing:-0.02em}
+.r-der .badge{color:var(--der)} .r-die .badge{color:var(--die)} .r-das .badge{color:var(--das)} .r-verb .badge{color:var(--verb)}
+.rart{font-size:20px}
+.rule h3{margin:4px 0 4px;font-size:17px}
+.rule p{margin:0 0 12px;color:var(--muted);font-size:15.5px}
+.rule .lesson p,.rule .lesson li{color:var(--ink)}
+.rule .lesson ul{margin:0 0 12px;padding-left:20px}
+.rule .lesson li{margin:3px 0;font-size:15.5px}
+.exs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.exs.col{flex-direction:column;align-items:flex-start}
+.ex{font:inherit;font-size:15px;border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:10px;padding:5px 10px;cursor:pointer;text-align:left}
+.ex:hover{border-color:var(--ink)}
+.ex .en{color:var(--muted);font-size:14px;display:block}
+.warn{background:var(--die-soft);border-radius:10px;padding:8px 12px;margin:0 0 12px;font-size:15px}
+footer{color:var(--muted);font-size:13px;margin-top:34px}
+[hidden]{display:none !important}
+@media (prefers-reduced-motion: reduce){*{transition:none !important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1 class="logo">Deutsch üben</h1>
+    <div class="flag" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <p class="sub">Everyday German with English and Bangla meanings. Pick a topic, learn the rules, then test yourself.</p>
+    <div class="mods" id="mods"></div>
+  </header>
+  <nav class="subnav" id="subnav"></nav>
+
+  <!-- ===== NOUNS: SETUP ===== -->
+  <section id="setup" class="panel" hidden>
+    <h2>Nouns &amp; words quiz</h2>
+    <div class="field">
+      <p>What do you want to practise?</p>
+      <div class="chips" data-key="mode">
+        <button class="chip" data-v="article">Articles <small>(nouns only)</small></button>
+        <button class="chip" data-v="meaning">Meanings</button>
+        <button class="chip" data-v="mixed">Both, mixed</button>
+      </div>
+    </div>
+    <div class="field">
+      <p>Topics</p>
+      <div class="chips" id="catChips"></div>
+      <p class="hint" id="catHint"></p>
+    </div>
+    <div class="field">
+      <p>Show meanings in</p>
+      <div class="chips" data-key="lang">
+        <button class="chip" data-v="en">English</button>
+        <button class="chip bn" data-v="bn">বাংলা</button>
+      </div>
+    </div>
+    <div class="field">
+      <p>Number of questions</p>
+      <div class="chips" data-key="count">
+        <button class="chip" data-v="10">10</button>
+        <button class="chip" data-v="20">20</button>
+        <button class="chip" data-v="50">50</button>
+        <button class="chip" data-v="all">All</button>
+      </div>
+    </div>
+    <div class="field">
+      <p>Pronunciation</p>
+      <div class="chips" data-key="auto">
+        <button class="chip" data-v="on">Read aloud automatically</button>
+        <button class="chip" data-v="off">Only when I tap Listen</button>
+      </div>
+      <div class="chips" data-key="rate" style="margin-top:8px">
+        <button class="chip" data-v="normal">Normal speed</button>
+        <button class="chip" data-v="slow">Slow</button>
+      </div>
+      <p class="hint voiceHint"></p>
+    </div>
+    <div class="row"><button class="btn" id="startBtn">Start quiz</button></div>
+    <p class="hint">Tip: use the number keys to answer and Enter for the next question.</p>
+  </section>
+
+  <!-- ===== NOUNS: RULES ===== -->
+  <section id="rules" hidden></section>
+
+  <!-- ===== NOUNS: LIST ===== -->
+  <section id="list" hidden>
+    <input class="search" id="search" type="search" placeholder="Search German, English or বাংলা" aria-label="Search words">
+    <div class="legend"><span class="art-der">der = masculine</span><span class="art-die">die = feminine / plural</span><span class="art-das">das = neuter</span></div>
+    <div id="listBody"></div>
+  </section>
+
+  <!-- ===== VERBS: LEARN ===== -->
+  <section id="vlearn" hidden></section>
+
+  <!-- ===== VERBS: SETUP ===== -->
+  <section id="vsetup" class="panel" hidden>
+    <h2>Verbs quiz</h2>
+    <div class="field">
+      <p>What do you want to practise?</p>
+      <div class="chips" data-key="vmode">
+        <button class="chip" data-v="meaning">Meanings</button>
+        <button class="chip" data-v="present">Present tense <small>(ich, du, er …)</small></button>
+        <button class="chip" data-v="aux">Perfekt: haben or sein?</button>
+        <button class="chip" data-v="pp">Partizip II <small>(gemacht, gegessen …)</small></button>
+        <button class="chip" data-v="example">Example sentences</button>
+        <button class="chip" data-v="mixed">Mixed</button>
+      </div>
+    </div>
+    <div class="field">
+      <p>Which verbs?</p>
+      <div class="chips" data-key="vset">
+        <button class="chip" data-v="all">All 100</button>
+        <button class="chip" data-v="1">1–25</button>
+        <button class="chip" data-v="2">26–50</button>
+        <button class="chip" data-v="3">51–75</button>
+        <button class="chip" data-v="4">76–100</button>
+        <span class="chiplabel">By type</span>
+        <button class="chip" data-v="modal">Modal &amp; helper verbs</button>
+        <button class="chip" data-v="change">Stem-changing verbs</button>
+        <button class="chip" data-v="sep">Separable verbs</button>
+        <button class="chip" data-v="strong">Irregular Partizip II</button>
+        <button class="chip" data-v="sein">Perfekt with sein</button>
+      </div>
+      <p class="hint" id="vHint"></p>
+    </div>
+    <div class="field">
+      <p>Show meanings in</p>
+      <div class="chips" data-key="lang">
+        <button class="chip" data-v="en">English</button>
+        <button class="chip bn" data-v="bn">বাংলা</button>
+      </div>
+    </div>
+    <div class="field">
+      <p>Number of questions</p>
+      <div class="chips" data-key="count">
+        <button class="chip" data-v="10">10</button>
+        <button class="chip" data-v="20">20</button>
+        <button class="chip" data-v="50">50</button>
+        <button class="chip" data-v="all">All</button>
+      </div>
+    </div>
+    <div class="field">
+      <p>Pronunciation</p>
+      <div class="chips" data-key="auto">
+        <button class="chip" data-v="on">Read aloud automatically</button>
+        <button class="chip" data-v="off">Only when I tap Listen</button>
+      </div>
+      <div class="chips" data-key="rate" style="margin-top:8px">
+        <button class="chip" data-v="normal">Normal speed</button>
+        <button class="chip" data-v="slow">Slow</button>
+      </div>
+      <p class="hint voiceHint"></p>
+    </div>
+    <div class="row"><button class="btn" id="vStartBtn">Start quiz</button></div>
+    <p class="hint">Tip: use the number keys to answer and Enter for the next question.</p>
+  </section>
+
+  <!-- ===== VERBS: LIST ===== -->
+  <section id="vlist" hidden>
+    <input class="search" id="vsearch" type="search" placeholder="Search verbs in German, English or বাংলা" aria-label="Search verbs">
+    <p class="hint">Tap a verb to see all its forms and an example sentence.</p>
+    <div id="vlistBody"></div>
+  </section>
+
+  <!-- ===== SHARED: QUIZ ===== -->
+  <section id="quiz" hidden>
+    <div class="topbar"><span id="qCount"></span><span id="qScore"></span></div>
+    <div class="bar"><i id="qBar"></i></div>
+    <div class="card">
+      <p class="qtype" id="qType"></p>
+      <div class="word" id="qWord"></div>
+      <button class="speak" id="speakBtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/></svg><span>Listen</span></button>
+      <p class="gloss" id="qGloss"></p>
+      <div class="opts" id="qOpts"></div>
+      <div id="qFeedback"></div>
+      <div class="row" id="qNextRow" hidden>
+        <button class="btn" id="nextBtn">Next question</button>
+        <button class="btn ghost" id="quitBtn">End quiz</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SHARED: RESULTS ===== -->
+  <section id="results" class="panel" hidden>
+    <h2>Your result</h2>
+    <div class="score" id="rScore"></div>
+    <p id="rMsg"></p>
+    <div class="row">
+      <button class="btn" id="retryMissBtn">Practise my mistakes</button>
+      <button class="btn ghost" id="newBtn">Start a new quiz</button>
+    </div>
+    <ul class="miss" id="rMiss"></ul>
+  </section>
+
+  <footer>Word lists adapted from Life360 Germany’s “200 German Nouns”, “Top 500 German Words (A1)” and “100 German Verbs”, with articles, Bangla meanings, verb forms and a few corrections added.</footer>
+</div>
+
+<script>
+const CATS = ["Home & everyday","People & places","Weather & food","Kitchen & media","Music","School & computer","Internet & tech","Communication","Directions & body","Body inside","Face & limbs","Health & fitness","Medicine","Hospital & nutrition","A1 nouns: people & time","A1 nouns: life & ideas","A1 verbs","A1 adjectives","A1 adverbs & little words","A1 pronouns & question words","A1 prepositions & connectors","A1 numbers"];
+
+// article|word|english|bangla|topic|note|similar-meaning group
+const RAW = `der|Apfel|apple|আপেল|0|
+die|Katze|cat|বিড়াল|0|
+der|Hund|dog|কুকুর|0|
+die|Schule|school|স্কুল|0|
+das|Buch|book|বই|0|
+der|Tisch|table|টেবিল|0|
+die|Lampe|lamp|ল্যাম্প|0|
+der|Stuhl|chair|চেয়ার|0|
+die|Uhr|clock|ঘড়ি|0|
+das|Fenster|window|জানালা|0|
+die|Tür|door|দরজা|0|
+der|Fernseher|television|টেলিভিশন|0|
+das|Auto|car|গাড়ি|0|
+die|Stadt|city|শহর|0|
+das|Land|country|দেশ|0|
+der|Bahnhof|train station|রেলওয়ে স্টেশন|1|Compound: Bahn + der Hof. The last part decides the article.
+das|Flugzeug|airplane|বিমান|1|Corrected: the PDF says der, but it’s das Flugzeug.
+die|Straße|street|রাস্তা|1|
+das|Haus|house|বাড়ি|1|
+die|Blume|flower|ফুল|1|
+der|Baum|tree|গাছ|1|
+das|Kind|child|শিশু|1|
+der|Freund|friend (male)|বন্ধু (পুরুষ)|1|
+die|Freundin|friend (female)|বন্ধু (মহিলা)|1|
+der|Lehrer|teacher (male)|শিক্ষক|1|
+die|Lehrerin|teacher (female)|শিক্ষিকা|1|
+der|Schüler|student (male)|ছাত্র|1|
+die|Schülerin|student (female)|ছাত্রী|1|
+das|Wetter|weather|আবহাওয়া|1|
+die|Sonne|sun|সূর্য|1|
+der|Mond|moon|চাঁদ|2|
+der|Regen|rain|বৃষ্টি|2|
+der|Schnee|snow|তুষার|2|
+das|Wasser|water|পানি|2|
+die|Milch|milk|দুধ|2|
+das|Brot|bread|রুটি|2|
+die|Butter|butter|মাখন|2|
+der|Käse|cheese|পনির|2|
+die|Kartoffel|potato|আলু|2|
+das|Fleisch|meat|মাংস|2|
+der|Apfelkuchen|apple cake|আপেল কেক|2|Compound: Apfel + der Kuchen. The last part decides the article.
+die|Suppe|soup|স্যুপ|2|
+der|Salat|salad|সালাদ|2|
+die|Pizza|pizza|পিৎজা|2|
+der|Reis|rice|চাল / ভাত|2|
+das|Gemüse|vegetables|শাকসবজি|3|
+der|Fisch|fish|মাছ|3|
+die|Gabel|fork|কাঁটা চামচ|3|
+das|Messer|knife|ছুরি|3|
+der|Löffel|spoon|চামচ|3|
+der|Teller|plate|প্লেট|3|
+die|Tasse|cup|কাপ|3|
+das|Glas|glass|গ্লাস|3|
+die|Flasche|bottle|বোতল|3|
+der|Becher|mug|মগ|3|
+die|Zeitung|newspaper|পত্রিকা|3|
+das|Magazin|magazine|ম্যাগাজিন|3|
+der|Brief|letter|চিঠি|3|
+die|Karte|card; map|কার্ড; মানচিত্র|3|Karte means both card and map.
+das|Foto|photo|ছবি|3|
+die|Kamera|camera|ক্যামেরা|4|
+der|Film|film|সিনেমা|4|
+die|Musik|music|সঙ্গীত|4|
+das|Lied|song|গান|4|
+der|Musiker|musician|সঙ্গীতশিল্পী|4|
+die|Sängerin|singer (female)|গায়িকা|4|
+der|Sänger|singer (male)|গায়ক|4|
+die|Melodie|melody|সুর|4|
+der|Tanz|dance|নাচ|4|
+das|Instrument|instrument|বাদ্যযন্ত্র|4|
+das|Klavier|piano|পিয়ানো|4|Corrected: the PDF says der, but it’s das Klavier.
+die|Geige|violin|বেহালা|4|
+die|Trompete|trumpet|ট্রাম্পেট|4|
+das|Schlagzeug|drums|ড্রাম|4|
+die|Gitarre|guitar|গিটার|4|
+der|Stift|pen|কলম|5|
+der|Bleistift|pencil|পেন্সিল|5|Compound: Blei + der Stift.
+das|Papier|paper|কাগজ|5|
+die|Seite|page|পৃষ্ঠা|5|
+das|Heft|notebook|খাতা|5|
+der|Radiergummi|eraser|রাবার|5|
+die|Schere|scissors|কাঁচি|5|
+der|Taschenrechner|calculator|ক্যালকুলেটর|5|Compound: Taschen + der Rechner.
+das|Lineal|ruler|স্কেল|5|
+der|Computer|computer|কম্পিউটার|5|
+die|Maus|mouse|মাউস|5|
+das|Keyboard|keyboard|কীবোর্ড|5|The German word is die Tastatur, but das Keyboard is also used.
+der|Bildschirm|screen|স্ক্রিন|5|
+der|Monitor|monitor|মনিটর|5|
+die|Taste|key (on a keyboard)|কী (বোতাম)|5|
+das|Programm|program|প্রোগ্রাম|6|
+die|Datei|file|ফাইল|6|
+der|Ordner|folder|ফোল্ডার|6|
+das|Dokument|document|নথি|6|Corrected: the PDF repeats die Datei here, but document is das Dokument.
+der|Drucker|printer|প্রিন্টার|6|
+die|Verbindung|connection|সংযোগ|6|
+das|Netzwerk|network|নেটওয়ার্ক|6|
+der|Download|download|ডাউনলোড|6|
+die|App|app|অ্যাপ|6|
+der|Link|link|লিংক|6|
+die|Website|website|ওয়েবসাইট|6|
+das|Internet|internet|ইন্টারনেট|6|
+der|Server|server|সার্ভার|6|
+der|Nutzer|user|ব্যবহারকারী|6|
+die|Anmeldung|registration|নিবন্ধন|6|
+das|Passwort|password|পাসওয়ার্ড|7|
+der|Benutzer|user|ব্যবহারকারী|7|
+die|Einstellung|setting|সেটিং|7|
+der|Klick|click|ক্লিক|7|
+die|Nachricht|message|বার্তা|7|
+der|Chat|chat|চ্যাট|7|
+die|Frage|question|প্রশ্ন|7|
+die|Antwort|answer|উত্তর|7|
+das|Problem|problem|সমস্যা|7|
+die|Lösung|solution|সমাধান|7|
+der|Vorschlag|suggestion|পরামর্শ|7|
+die|Idee|idea|ধারণা|7|
+das|Beispiel|example|উদাহরণ|7|
+das|Ziel|goal|লক্ষ্য|7|
+der|Weg|way|পথ|8|
+der|Plan|plan|পরিকল্পনা|8|
+die|Richtung|direction|দিক|8|
+die|Strecke|route|রুট|8|
+der|Fuß|foot|পায়ের পাতা|8|
+das|Bein|leg|পা|8|
+der|Kopf|head|মাথা|8|
+die|Hand|hand|হাত|8|
+der|Arm|arm|বাহু|8|
+der|Rücken|back|পিঠ|8|
+die|Schulter|shoulder|কাঁধ|8|
+das|Ohr|ear|কান|8|
+das|Auge|eye|চোখ|8|
+der|Mund|mouth|মুখ|9|
+die|Zähne|teeth (plural)|দাঁত (বহুবচন)|9|One tooth is der Zahn.
+die|Zunge|tongue|জিহ্বা|9|
+der|Hals|neck|গলা|9|
+das|Herz|heart|হৃদয়|9|
+der|Magen|stomach|পাকস্থলী|9|
+die|Lunge|lung|ফুসফুস|9|
+der|Bauch|belly|পেট|9|
+die|Niere|kidney|কিডনি|9|
+die|Leber|liver|যকৃৎ|9|
+die|Blase|bladder|মূত্রাশয়|9|
+das|Blut|blood|রক্ত|9|
+die|Haut|skin|ত্বক|9|
+das|Haar|hair|চুল|9|
+die|Wimpern|eyelashes (plural)|চোখের পাপড়ি|9|One eyelash is die Wimper.
+die|Augenbraue|eyebrow|ভ্রু|10|Compound: Augen + die Braue.
+das|Kinn|chin|থুতনি|10|Corrected: the PDF’s Bangla says গাল, which means cheek (die Wange).
+die|Lippe|lip|ঠোঁট|10|
+das|Gesicht|face|মুখমণ্ডল|10|
+der|Zahn|tooth|দাঁত|10|
+die|Handfläche|palm|হাতের তালু|10|Compound: Hand + die Fläche.
+der|Finger|finger|আঙুল|10|
+der|Nagel|nail|নখ|10|
+die|Zehe|toe|পায়ের আঙুল|10|
+das|Fußgelenk|ankle|গোড়ালি|10|Corrected: the PDF says der, but Fuß + das Gelenk = das Fußgelenk.
+das|Knie|knee|হাঁটু|10|
+das|Gelenk|joint|জয়েন্ট (সন্ধি)|10|
+die|Wirbelsäule|spine|মেরুদণ্ড|10|Compound: Wirbel + die Säule.
+der|Muskel|muscle|পেশী|10|
+der|Knochen|bone|হাড়|10|
+das|Gewebe|tissue|টিস্যু|11|
+die|Zelle|cell|কোষ|11|
+die|Atmung|breathing|শ্বাসপ্রশ্বাস|11|
+die|Bewegung|movement|চলাচল|11|
+der|Sport|sport|খেলাধুলা|11|
+die|Übung|exercise|অনুশীলন|11|
+die|Fitness|fitness|ফিটনেস|11|
+der|Muskelaufbau|muscle building|পেশী গঠন|11|Compound: Muskel + der Aufbau.
+die|Ausdauer|endurance|সহ্যশক্তি|11|
+der|Erfolg|success|সফলতা|11|
+die|Motivation|motivation|উৎসাহ|11|
+die|Gesundheit|health|স্বাস্থ্য|11|
+der|Arzt|doctor (male)|ডাক্তার (পুরুষ)|11|
+die|Ärztin|doctor (female)|ডাক্তার (মহিলা)|11|
+die|Behandlung|treatment|চিকিৎসা|11|
+das|Rezept|prescription|প্রেসক্রিপশন|12|Rezept also means recipe.
+die|Medizin|medicine|ঔষধ|12|
+das|Krankenhaus|hospital|হাসপাতাল|12|Compound: krank (sick) + das Haus.
+die|Klinik|clinic|ক্লিনিক|12|
+der|Krankenwagen|ambulance|অ্যাম্বুলেন্স|12|Compound: Kranken + der Wagen.
+die|Apotheke|pharmacy|ফার্মেসি|12|
+das|Medikament|medication|ওষুধ|12|
+das|Fieber|fever|জ্বর|12|
+die|Grippe|flu|ইনফ্লুয়েঞ্জা|12|
+die|Erkältung|cold (illness)|সর্দি / ঠান্ডা|12|
+der|Husten|cough|কাশি|12|
+der|Schmerz|pain|ব্যথা|12|
+die|Allergie|allergy|অ্যালার্জি|12|
+die|Spritze|injection|ইনজেকশন|12|
+der|Verband|bandage|ব্যান্ডেজ|12|
+die|OP (Operation)|surgery|সার্জারি|13|
+der|Notarzt|emergency doctor|জরুরি চিকিৎসক|13|Compound: Not + der Arzt.
+die|Notaufnahme|emergency room|জরুরি বিভাগ|13|Compound: Not + die Aufnahme.
+das|Röntgen|X-ray|এক্স-রে|13|
+die|Impfung|vaccination|টিকা|13|
+der|Blutdruck|blood pressure|রক্তচাপ|13|Compound: Blut + der Druck.
+das|Cholesterin|cholesterol|কোলেস্টেরল|13|Corrected: the PDF says der, but the standard form is das Cholesterin.
+der|Zucker|sugar|চিনি|13|
+die|Diät|diet|ডায়েট|13|
+die|Nahrung|food|খাবার|13|
+der|Hunger|hunger|ক্ষুধা|13|
+der|Durst|thirst|তৃষ্ণা|13|
+die|Sucht|addiction|আসক্তি|13|
+das|Gewicht|weight|ওজন|13|
+der|Körper|body|শরীর|13|
+|der / die / das|the|নির্দিষ্ট আর্টিকেল (the)|19|Which one you use depends on the noun: der (masculine), die (feminine or plural), das (neuter).|
+|ein|a, an|একটি|19||
+|ich|I|আমি|19||
+|du|you (informal)|তুমি|19||you
+|er|he|সে (ছেলে)|19||
+|sie|she; they|সে (মেয়ে); তারা|19||
+|es|it|এটা|19||
+|wir|we|আমরা|19||
+|ihr|her; you (plural)|তার (মেয়ের); তোমরা|19||
+|man|one, people in general|কেউ / লোকে|19||
+|sich|oneself, himself, herself|নিজেকে|19||self
+|selbst|self, even|নিজে|19||self
+|mir|(to) me|আমাকে / আমার জন্য|19||me
+|mich|me|আমাকে|19||me
+|dir|(to) you|তোমাকে / তোমার জন্য|19||you
+|dich|you|তোমাকে|19||you
+|ihm|(to) him|তাকে (ছেলেকে) / তার জন্য|19||him
+|ihn|him|তাকে (ছেলেকে)|19||him
+|uns|us|আমাদেরকে|19||us
+|ihnen|(to) them|তাদেরকে|19||
+|mein|my|আমার|19||
+|dein|your|তোমার|19||
+|sein|his, its|তার (ছেলের)|19||
+|unser|our|আমাদের|19||us
+|dies|this|এটা / এই|19||this
+|jener / jene / jenes|that, those|ঐ / সেই|19||this
+|jeder / jede / jedes|every, each|প্রত্যেক|19||
+|welcher / welche / welches|which|কোনটি|19||
+|solcher / solche / solches|such|এমন|19||
+|all|all|সব|19||
+|beide|both|উভয়|19||
+|kein|no, not a|কোনো … না|19||not
+|etwas|something, a little|কিছু|19||few
+|nichts|nothing|কিছুই না|19||
+|einige|a few, some|কয়েকটি|19||few
+|mehrere|several|কয়েকজন|19||few
+|manch|some, many a|কিছু কিছু|19||few
+|jemand|someone|কেউ একজন|19||
+|niemand|nobody|কেউ না|19||
+|was|what|কী|19||
+|wer|who|কে|19||
+|wie|how|কিভাবে|19||
+|wo|where|কোথায়|19||
+|warum|why|কেন|19||
+|denen|(to) whom, (to) which|যাদেরকে|19||
+|deren|whose (her, their)|যাদের|19||whose
+|dessen|whose (his, its)|যার|19||whose
+|erste|first|প্রথম|21||first
+|zwei|two|দুই|21||
+|drei|three|তিন|21||
+|vier|four|চার|21||
+|fünf|five|পাঁচ|21||
+|sechs|six|ছয়|21||
+|acht|eight|আট|21||
+|zehn|ten|দশ|21||
+die|Million|million|মিলিয়ন|15||
+die|Milliarde|billion|বিলিয়ন|15||
+das|Prozent|percent|শতাংশ|15||
+der|Euro|euro|ইউরো|15||
+der|Meter|metre|মিটার|15||
+die|Zahl|number|সংখ্যা|15||
+|sein|to be|হওয়া / থাকা|16||
+|haben|to have|থাকা (কারো কিছু আছে)|16||
+|werden|to become|হয়ে ওঠা|16||
+|können|can, to be able to|পারা|16||
+|müssen|must, to have to|অবশ্যই করতে হওয়া|16||
+|sollen|should, ought to|উচিত হওয়া|16||
+|wollen|to want|চাওয়া|16||
+|dürfen|to be allowed to, may|অনুমতি থাকা|16||
+|mögen|to like|পছন্দ করা|16||
+|sagen|to say|বলা|16||say
+|machen|to do, to make|করা / বানানো|16||do
+|tun|to do|করা|16||do
+|geben|to give|দেওয়া|16||
+|kommen|to come|আসা|16||
+|wissen|to know (a fact)|জানা|16||know
+|kennen|to know (a person or place)|চেনা|16||know
+|erkennen|to recognise|চিনতে পারা|16||know
+|sehen|to see|দেখা|16||see
+|ansehen|to look at, to watch|তাকিয়ে দেখা|16||see
+|schauen|to look|তাকানো|16||see
+|lassen|to let, to leave|করতে দেওয়া / রেখে যাওয়া|16||
+|gehen|to go (on foot)|যাওয়া (হেঁটে)|16||go
+|fahren|to drive, to go (by vehicle)|গাড়িতে যাওয়া / চালানো|16||go
+|laufen|to run, to walk|দৌড়ানো / হাঁটা|16||
+|stehen|to stand|দাঁড়িয়ে থাকা|16||
+|sitzen|to sit|বসে থাকা|16||
+|liegen|to lie (be lying down)|শুয়ে থাকা / অবস্থিত হওয়া|16||
+|finden|to find|খুঁজে পাওয়া|16||
+|suchen|to look for|খোঁজা|16||
+|bleiben|to stay|রয়ে যাওয়া|16||
+|heißen|to be called|নাম হওয়া|16||
+|denken|to think|চিন্তা করা|16||think
+|glauben|to believe|বিশ্বাস করা|16||think
+|meinen|to think, to mean|মনে করা|16||think
+|nehmen|to take|নেওয়া|16||
+|halten|to hold, to stop|ধরে রাখা / থামা|16||
+|nennen|to name, to call|নাম দেওয়া|16||
+|zeigen|to show|দেখানো|16||
+|führen|to lead|নেতৃত্ব দেওয়া|16||
+|sprechen|to speak|কথা বলা|16||speak
+|reden|to talk|আলাপ করা|16||speak
+|erzählen|to tell (a story)|গল্প বলা|16||say
+|bringen|to bring|আনা|16||
+|leben|to live (be alive)|বেঁচে থাকা|16||live
+|wohnen|to live (reside)|বসবাস করা|16||live
+|fragen|to ask|জিজ্ঞাসা করা|16||
+|gelten|to be valid|প্রযোজ্য হওয়া|16||
+|stellen|to put (upright)|দাঁড় করিয়ে রাখা|16||put
+|setzen|to set, to put|বসানো|16||put
+|legen|to lay (flat)|শুইয়ে রাখা|16||put
+|einsetzen|to insert, to use|প্রয়োগ করা|16||put
+|spielen|to play|খেলা|16||play
+|arbeiten|to work|কাজ করা|16||
+|brauchen|to need|প্রয়োজন হওয়া|16||
+|folgen|to follow|অনুসরণ করা|16||
+|lernen|to learn|শেখা|16||
+|studieren|to study (at university)|পড়াশোনা করা|16||
+|lesen|to read|পড়া|16||
+|schreiben|to write|লেখা|16||
+|bestehen|to exist; to pass (an exam)|বিদ্যমান থাকা; পাস করা|16||
+|bekommen|to get, to receive|পাওয়া|16||get
+|erhalten|to receive|গ্রহণ করা|16||get
+|kriegen|to get|পেয়ে যাওয়া|16||get
+|verstehen|to understand|বোঝা|16||
+|beginnen|to begin|শুরু করা|16||begin
+|anfangen|to start|আরম্ভ করা|16||begin
+|versuchen|to try|চেষ্টা করা|16||
+|erklären|to explain|ব্যাখ্যা করা|16||
+|entsprechen|to correspond to|মিলে যাওয়া|16||
+|ziehen|to pull; to move (house)|টানা; বাসা বদলানো|16||
+|scheinen|to shine; to seem|জ্বলা; মনে হওয়া|16||seem
+|aussehen|to look (appear)|দেখতে লাগা|16||seem
+|erscheinen|to appear|হাজির হওয়া|16||seem
+|fallen|to fall|পড়ে যাওয়া|16||
+|gehören|to belong to|কারো হওয়া|16||
+|entstehen|to arise, to come into being|সৃষ্টি হওয়া|16||
+|treffen|to meet|দেখা করা|16||
+|vorstellen|to introduce; to imagine|পরিচয় করানো; কল্পনা করা|16||
+|handeln|to act; to trade|কাজ করা; ব্যবসা করা|16||
+|erreichen|to reach, to achieve|পৌঁছানো / অর্জন করা|16||
+|tragen|to carry, to wear|বহন করা / পরা|16||
+|schaffen|to manage; to create|পেরে ওঠা; সৃষ্টি করা|16||
+|verlieren|to lose|হারানো|16||
+|darstellen|to show, to represent|তুলে ধরা|16||
+|entwickeln|to develop|উন্নত করা|16||
+|bilden|to form, to educate|গঠন করা|16||
+|erwarten|to expect|আশা করা|16||
+|betreffen|to concern, to affect|সম্পর্কিত হওয়া|16||
+|warten|to wait|অপেক্ষা করা|16||
+|vergehen|to pass (time)|কেটে যাওয়া (সময়)|16|The PDF says “to decay”, but vergehen usually means time passing.|
+|helfen|to help|সাহায্য করা|16||
+|gewinnen|to win|জেতা|16||
+|schließen|to close|বন্ধ করা|16||
+|fühlen|to feel|অনুভব করা|16||
+|bieten|to offer|প্রস্তাব দেওয়া|16||offer
+|anbieten|to offer (for sale, a service)|অফার করা|16||offer
+|interessieren|to interest|আগ্রহী করা|16||
+|erinnern|to remind, to remember|মনে করিয়ে দেওয়া|16||
+|ergeben|to result in|ফলাফল দাঁড়ানো|16||
+|verbinden|to connect|সংযুক্ত করা|16||
+|fehlen|to be missing|অনুপস্থিত থাকা|16||
+|bedeuten|to mean|অর্থ বোঝানো|16||
+|vergleichen|to compare|তুলনা করা|16||
+|steigen|to rise, to climb|বৃদ্ধি পাওয়া / ওঠা|16||
+|nutzen|to use|ব্যবহার করা|16||
+|verlassen|to leave|ছেড়ে যাওয়া|16||
+|ändern|to change|পরিবর্তন করা|16||
+|wachsen|to grow|বেড়ে ওঠা|16||
+|ausgehen|to go out; to assume|বাইরে বেড়াতে যাওয়া|16||
+|geschehen|to happen|ঘটা|16||
+|beschreiben|to describe|বর্ণনা করা|16||
+|annehmen|to accept, to assume|গ্রহণ করা / ধরে নেওয়া|16||
+|planen|to plan|পরিকল্পনা করা|16||
+|andere|other|অন্য|17||
+|viel|much, a lot|অনেক|17||
+|ganz|whole, quite|পুরো|17||
+|groß|big, tall, great|বড়|17||
+|gut|good|ভালো|17||good
+|besser|better|আরও ভালো|17||good
+|bester / beste / bestes|best|সেরা|17||good
+|neu|new|নতুন|17||
+|alt|old|পুরনো / বয়স্ক|17||
+|jung|young|তরুণ|17||
+|lang|long|লম্বা|17||
+|kurz|short|সংক্ষিপ্ত|17||small
+|klein|small, little|ছোট|17||small
+|gering|low, slight|সামান্য|17||small
+|wenig|little, few|কম|17||few
+|deutsch|German|জার্মান|17||
+|europäisch|European|ইউরোপীয়|17||
+|international|international|আন্তর্জাতিক|17||
+|weit|far, wide|দূর|17||
+|nah|near, close|কাছাকাছি|17||
+|hoch|high|উঁচু|17||
+|einfach|simple, simply|সহজ|17||easy
+|leicht|light, easy|হালকা / সহজ|17||easy
+|schwer|difficult, heavy|কঠিন / ভারী|17||difficult
+|schwierig|difficult|কঠিন|17||difficult
+|letzter / letzte / letztes|last|শেষ|17|The PDF writes “Letzt”; it changes its ending like an adjective.|
+|nächster / nächste / nächstes|next|পরবর্তী|17||
+|möglich|possible|সম্ভব|17||
+|eigen|own|নিজস্ব|17||
+|schön|beautiful, nice|সুন্দর|17||
+|spät|late|দেরি|17||
+|früh|early|তাড়াতাড়ি|17||
+|wichtig|important|গুরুত্বপূর্ণ|17||
+|weitere|further, additional|আরও কিছু|17||further
+|genau|exact, exactly|ঠিক|17||right
+|richtig|right, correct|সঠিক|17||right
+|stark|strong|শক্তিশালী|17||
+|bestimmt|certain; definitely|নির্দিষ্ট; নিশ্চয়ই|17||certain
+|sicher|safe, sure|নিরাপদ / নিশ্চিত|17||certain
+|gewiss|certain|নিঃসন্দেহ|17||certain
+|verschieden|different, various|বিভিন্ন|17||different
+|unterschiedlich|different|আলাদা|17||different
+|anders|different, differently|ভিন্নভাবে|17||different
+|schnell|fast|দ্রুত|17||
+|politisch|political|রাজনৈতিক|17||
+|sozial|social|সামাজিক|17||
+|klar|clear|পরিষ্কার|17||clear
+|deutlich|clear, distinct|স্পষ্ট|17||clear
+|allein|alone|একা|17||
+|einzeln|individual, single|আলাদা আলাদা|17||single
+|einzig|only, single|একমাত্র|17||single
+|bekannt|well-known|পরিচিত|17||
+|rund|round; about|গোল; প্রায়|17||about
+|frei|free|মুক্ত / খালি|17||
+|schlecht|bad|খারাপ|17||
+|allgemein|general|সাধারণ|17||
+|gemeinsam|together, shared|একসাথে|17||
+|voll|full|পূর্ণ|17||
+|direkt|direct, directly|সরাসরি|17||
+|rot|red|লাল|17||
+|schwarz|black|কালো|17||
+|offen|open|খোলা|17||
+|besonderer / besondere / besonderes|special|বিশেষ|17||special
+|halb|half|অর্ধেক|17||
+|öffentlich|public|জনসাধারণের|17||
+|wesentlich|essential|অপরিহার্য|17||
+|ähnlich|similar|একই রকম|17||
+|praktisch|practical|ব্যবহারিক|17||
+|persönlich|personal, personally|ব্যক্তিগত|17||
+|-jährig|… years old (as in zehnjährig)|… বছর বয়সী|17||
+|nicht|not|না|18||not
+|nein|no|না (উত্তরে)|18||not
+|ja|yes|হ্যাঁ|18||
+|auch|also, too|ও / আরও|18||
+|so|so, like this|এভাবে|18||
+|dann|then|তারপর|18||then
+|danach|afterwards|এরপরে|18||then
+|damals|back then|তখন|18||then
+|da|there; because|সেখানে; যেহেতু|18||because
+|dort|there|ওখানে|18||because
+|hier|here|এখানে|18||here
+|her|here (towards the speaker)|এদিকে|18|The PDF says “away from”, but her means towards the speaker; hin is the word for away.|here
+|noch|still, yet|এখনও|18||
+|also|so, therefore|সুতরাং|18|False friend: also means “so”, not “also” (that’s auch).|therefore
+|nur|only|শুধু|18||
+|schon|already|ইতিমধ্যে|18||already
+|bereits|already|আগেই|18||already
+|inzwischen|meanwhile, by now|এর মধ্যে|18||already
+|mehr|more|আরও বেশি|18||
+|jetzt|now|এখন|18||now
+|nun|now, well|এখন তাহলে|18||now
+|immer|always|সবসময়|18||
+|nie|never|কখনো না|18||
+|oft|often|প্রায়ই|18||often
+|häufig|frequently|ঘন ঘন|18||often
+|manchmal|sometimes|মাঝে মাঝে|18||
+|sehr|very|খুব|18||
+|ziemlich|quite, fairly|বেশ|18||
+|doch|yes (after a negative); still|অবশ্যই / তবুও|18||but
+|allerdings|however, though|তবে|18||but
+|wieder|again|আবার|18||
+|eigentlich|actually|আসলে|18||actually
+|wirklich|really|সত্যিই|18||actually
+|oben|above, up there|উপরে|18||
+|heute|today|আজ|18||
+|eben|just (now)|এইমাত্র|18||justnow
+|gerade|just now; straight|ঠিক এখন; সোজা|18||justnow
+|erst|first; only, not until|প্রথমে; কেবল|18||first
+|zunächst|at first|শুরুতে|18||first
+|natürlich|of course, natural|অবশ্যই / প্রাকৃতিক|18||
+|vielleicht|maybe, perhaps|হয়তো|18||maybe
+|wahrscheinlich|probably|সম্ভবত|18||maybe
+|wohl|probably; well|বোধহয়|18||maybe
+|einmal|once|একবার|18||
+|gleich|same; right away|একই; এখনই|18||
+|sofort|immediately|সঙ্গে সঙ্গে|18||
+|bald|soon|শীঘ্রই|18||
+|plötzlich|suddenly|হঠাৎ|18||
+|gar|at all|একদম|18||atall
+|überhaupt|at all, in general|আদৌ|18||atall
+|etwa|about, approximately|আনুমানিক|18||about
+|fast|almost|প্রায়|18|False friend: fast means “almost”, not “quick” (that’s schnell).|about
+|zwar|admittedly|অবশ্য|18||
+|bisschen|a little bit (ein bisschen)|একটু|18||few
+|halt|just, simply (casual)|তো / ব্যস|18||
+|gern|gladly (to like doing)|সানন্দে|18||
+|besonders|especially|বিশেষ করে|18||special
+|kaum|hardly|খুব কমই|18||
+|sogar|even|এমনকি|18||
+|na|well (in speech)|আচ্ছা|18||well
+|naja|well …|আচ্ছা …|18||well
+|ach so|oh, I see|ও, বুঝেছি|18||well
+|sonst|otherwise|নাহলে|18||
+|weiter|further, on|সামনে / আরও|18||further
+|schließlich|finally, after all|শেষ পর্যন্ত|18||finally
+|endlich|finally, at last|অবশেষে|18||finally
+|eher|rather, earlier|বরং|18||
+|je|ever; each|কখনো; প্রতি|18||
+|früher|earlier, in the past|আগে|18||
+|bisher|until now|এখন পর্যন্ত|18||
+|nämlich|namely, you see|অর্থাৎ|18||
+|irgendwie|somehow|কোনোভাবে|18||
+|meist|mostly|বেশিরভাগ সময়|18||
+|ebenso|just as, likewise|একইভাবে|18||
+|außerdem|besides, also|এছাড়াও|18||
+|völlig|completely|সম্পূর্ণভাবে|18||
+|genug|enough|যথেষ্ট|18||
+|und|and|এবং|20||
+|oder|or|অথবা|20||
+|aber|but|কিন্তু|20||but
+|sondern|but (rather)|বরং|20||but
+|jedoch|however|তথাপি|20||but
+|dass|that (as in “I know that…”)|যে|20||
+|als|as, when, than|যখন / চেয়ে|20||
+|wenn|if, when|যদি / যখন|20||
+|ob|whether, if|কিনা|20||
+|weil|because|কারণ|20||because
+|denn|because|কেননা|20||because
+|wegen|because of|কারণে|20|The PDF writes “wege”; the correct word is wegen.|because
+|obwohl|although|যদিও|20||
+|während|during; while|চলাকালীন; যখন|20||
+|damit|so that; with it|যাতে; এটা দিয়ে|20||
+|deshalb|that’s why|সেজন্য|20||therefore
+|daher|therefore; from there|তাই; সেখান থেকে|20||therefore
+|dadurch|as a result, through it|এর ফলে|20||therefore
+|sowie|as well as|এবং সেইসাথে|20||
+|beziehungsweise|or rather, respectively|অথবা / যথাক্রমে|20||
+|in|in, into|ভিতরে|20||
+|zu|to, at|প্রতি / কাছে|20||
+|von|from, of|থেকে / এর|20||from
+|aus|out of, from|থেকে (বাইরে)|20||from
+|ab|from (a time or place)|থেকে শুরু করে|20||from
+|mit|with|সাথে|20||
+|auf|on (top of)|উপরে|20||on
+|an|at, on (the side of)|গায়ে / পাশে|20||on
+|für|for|জন্য|20||
+|bei|at, near, with|কাছে|20||
+|nach|after; to (a place)|পরে; দিকে|20||
+|um|around; at (a time)|চারপাশে; (সময়) এ|20||
+|über|over, about|উপর দিয়ে / সম্পর্কে|20||
+|unter|under|নিচে|20||
+|vor|in front of, before, ago|সামনে / আগে|20||
+|hinter|behind|পিছনে|20||
+|neben|next to|পাশে|20||
+|zwischen|between|মাঝখানে|20||
+|durch|through|মধ্য দিয়ে|20||
+|bis|until|পর্যন্ত|20||
+|seit|since, for (time)|থেকে (সময়)|20||
+|gegen|against|বিরুদ্ধে|20||
+|ohne|without|ছাড়া|20||
+|gegenüber|opposite|বিপরীতে|20||
+|dabei|with it; at the same time|সাথে; একই সময়ে|20||
+|dazu|in addition, to it|তাছাড়া|20||
+|darauf|on it|এর উপরে|20||
+|dafür|for it|এর জন্য|20||
+|davon|from it, about it|এর থেকে|20||
+|darüber|about it, above it|এ নিয়ে|20||
+|daran|on it, of it|এতে|20||
+|darin|in it|এর ভিতরে|20||
+|dagegen|against it; on the other hand|এর বিপক্ষে|20||
+das|Jahr|year|বছর|14||
+das|Mal|time (occasion)|বার|14||time
+die|Zeit|time|সময়|14||time
+der|Tag|day|দিন|14||
+die|Woche|week|সপ্তাহ|14||
+der|Monat|month|মাস|14||
+das|Jahrhundert|century|শতাব্দী|14|Compound: Jahr + das Hundert. The last part decides the article.|
+die|Stunde|hour|ঘণ্টা|14||
+die|Minute|minute|মিনিট|14||
+der|Moment|moment|মুহূর্ত|14|Exception to the -ment rule: it’s der Moment.|
+der|Morgen|morning|সকাল|14|With a small m, morgen means tomorrow.|
+der|Abend|evening|সন্ধ্যা|14||
+die|Nacht|night|রাত|14||
+der|Anfang|beginning|শুরু|14||
+die|Frau|woman; wife; Mrs.|মহিলা; স্ত্রী|14||
+der|Mann|man; husband|পুরুষ; স্বামী|14||
+der|Mensch|human being, person|মানুষ|14||person
+die|Person|person|ব্যক্তি|14||person
+die|Leute|people (plural)|লোকজন|14||person
+der|Herr|gentleman; Mr.|ভদ্রলোক; জনাব|14||
+die|Mutter|mother|মা|14||
+der|Vater|father|বাবা|14||
+der|Sohn|son|ছেলে|14||
+die|Eltern|parents (plural)|বাবা-মা|14||
+die|Familie|family|পরিবার|14||
+der|Fall|case; fall|ঘটনা / ক্ষেত্র|15||
+die|Arbeit|work|কাজ|15||work
+das|Werk|work (of art); factory|সৃষ্টিকর্ম; কারখানা|15||work
+der|Beruf|job, profession|পেশা|15||
+das|Recht|right; law|অধিকার; আইন|15||
+die|Welt|world|পৃথিবী|15||
+der|Teil|part|অংশ|15||
+das|Ende|end|সমাপ্তি|15|Exception: ends in -e but takes das.|
+der|Grund|reason|কারণ|15||
+das|Leben|life|জীবন|15|Verb as noun: leben → das Leben.|
+das|Wort|word|শব্দ|15||
+der|Bereich|area, field|ক্ষেত্র|15||
+das|Geld|money|টাকা|15||
+die|Sache|thing, matter|বিষয়|15||thing
+das|Ding|thing|জিনিস|15||thing
+die|Art|kind, type|ধরন|15||
+der|Name|name|নাম|15|Exception: ends in -e but takes der.|
+die|Möglichkeit|possibility|সম্ভাবনা|15||
+die|Geschichte|history, story|ইতিহাস / গল্প|15||
+die|Gesellschaft|society; company|সমাজ; কোম্পানি|15||company
+das|Unternehmen|company, business|প্রতিষ্ঠান|15|Verb as noun: unternehmen → das Unternehmen.|company
+das|Bild|picture|চিত্র / ছবি|15||photo
+die|Stelle|place, spot; job|স্থান; চাকরি|15||place
+der|Platz|place, seat, square|জায়গা / আসন|15||place
+der|Ort|place, town|জায়গা / শহর|15||place
+der|Raum|room, space|ঘর / স্থান|15||place
+das|Paar|pair, couple|জোড়া / দম্পতি|15||
+die|Form|form, shape|আকার|15||
+die|Mark|mark (old German money)|মার্ক (পুরনো মুদ্রা)|15||
+die|Entwicklung|development|উন্নয়ন|15||
+die|Aufgabe|task, exercise|দায়িত্ব / অনুশীলনী|15||
+die|Universität|university|বিশ্ববিদ্যালয়|15||
+der|Sinn|sense, meaning|অর্থ / বোধ|15||meaning
+die|Bedeutung|meaning|তাৎপর্য|15||meaning
+der|Staat|state|রাষ্ট্র|15||
+das|Thema|topic|বিষয়বস্তু|15|The PDF says “Themen (noun)”, but Themen is just the plural. Thema means topic.|
+das|System|system|ব্যবস্থা|15||
+der|Blick|look, view|দৃষ্টি|15||
+die|Gruppe|group|দল|15||
+der|Wert|value|মূল্য|15||
+die|Sprache|language|ভাষা|15||
+die|Folge|result; episode|পরিণতি; পর্ব|15||result
+das|Ergebnis|result|ফলাফল|15||result
+das|Interesse|interest|আগ্রহ|15|Exception: ends in -e but takes das.|
+die|Rolle|role|ভূমিকা|15||
+die|Weise|way, manner|উপায়|15||way
+die|Regierung|government|সরকার|15||
+das|Stück|piece|টুকরা|15||
+die|Wohnung|apartment|বাসা / ফ্ল্যাট|15||
+der|Text|text|লেখা|15||
+das|Gespräch|conversation|কথোপকথন|15||
+der|Krieg|war|যুদ্ধ|15||
+der|Preis|price; prize|দাম; পুরস্কার|15||
+die|Abbildung|illustration, figure|চিত্রণ|15||
+der|Begriff|term, concept|পরিভাষা|15||idea
+die|Funktion|function|কার্যকারিতা|15||
+der|Punkt|point, dot, full stop|বিন্দু|15||
+die|Situation|situation|পরিস্থিতি|15||
+der|Boden|ground, floor|মাটি / মেঝে|15||
+die|Information|information|তথ্য|15||
+die|Kunst|art|শিল্পকলা|15||
+die|Stimme|voice; vote|কণ্ঠস্বর; ভোট|15||
+die|Politik|politics|রাজনীতি|15||
+der|Rahmen|frame, framework|কাঠামো|15||
+die|Angst|fear|ভয়|15||
+die|Regel|rule|নিয়ম|15||
+der|Schritt|step|পদক্ষেপ|15||
+der|Absatz|paragraph|অনুচ্ছেদ|15||
+der|Gott|god, God|ঈশ্বর|15||
+die|Beziehung|relationship|সম্পর্ক|15||
+die|Erfahrung|experience|অভিজ্ঞতা|15||
+die|Zukunft|future|ভবিষ্যৎ|15||
+das|Spiel|game|খেলা|15||play`;
+
+const WORDS = RAW.split("\n").map((l,i)=>{const [a,w,en,bn,c,note,g]=l.split("|");return {id:i,a,w,en,bn,c:+c,note:note||"",g:g||""};});
+// meanings too close to use as distractors for each other
+const SAME = {"medicine":"med","medication":"med","tooth":"tooth","teeth (plural)":"tooth","mouth":"face","face":"face","photo":"photo","way":"way","idea":"idea","friend (male)":"friend","friend (female)":"friend","teacher (male)":"teacher","teacher (female)":"teacher","student (male)":"student","student (female)":"student"};
+const grp = w => w.g || SAME[w.en] || w.en;
+
+const VRAW = `1|sein|to be|হওয়া / থাকা|sein|gewesen|H|||Ich bin müde.|I am tired.||
+2|haben|to have|থাকা (কারো কিছু আছে)|haben|gehabt|H|||Ich habe keine Zeit.|I have no time.||
+3|werden|to become, to get|হয়ে ওঠা|sein|geworden|H|||Ich will Schauspieler werden.|I want to become an actor.|werden also makes the future: Ich werde kommen (I will come). The PDF example misspells it as “warden”.|
+4|können|can, to be able to|পারা|haben|gekonnt|Mod|||Ich kann nicht schwimmen.|I can’t swim.||can
+5|müssen|must, to have to|অবশ্যই করতে হওয়া|haben|gemusst|Mod|||Ich muss nach Hause gehen.|I have to go home.||must
+6|wollen|to want|চাওয়া|haben|gewollt|Mod|||Sie will dich sehen.|She wants to see you.||want
+7|sollen|should, to be supposed to|উচিত হওয়া|haben|gesollt|Mod|||Was soll ich machen?|What should I do?||must
+8|dürfen|may, to be allowed to|অনুমতি থাকা|haben|gedurft|Mod|||Hier darf man nicht rauchen.|You’re not allowed to smoke here.||can
+9|mögen|to like|পছন্দ করা|haben|gemocht|Mod|||Ich mag Pizza.|I like pizza.||want
+10|möchten|would like (to)|চাওয়া (ভদ্রভাবে)|||Mod|||Möchten Sie etwas trinken?|Would you like something to drink?|möchten is the polite form of mögen. It has no Perfekt of its own; for the past, use wollen.|want
+11|gehen|to go (on foot)|যাওয়া|sein|gegangen|S|||Ich gehe nach Hause.|I’m going home.||go
+12|kommen|to come|আসা|sein|gekommen|S|||Ich bin gestern um 22 Uhr gekommen.|I arrived yesterday at 10 pm.||
+13|reisen|to travel|ভ্রমণ করা|sein|gereist|R|||Ich bin nach Deutschland gereist.|I travelled to Germany.||go
+14|fliegen|to fly|উড়ে যাওয়া|sein|geflogen|S|||Meine Mutter fliegt nicht gern.|My mother doesn’t like flying.||go
+15|wohnen|to live (reside)|বসবাস করা|haben|gewohnt|R|||Ich habe zwei Jahre in Deutschland gewohnt.|I lived in Germany for two years.||
+16|heißen|to be called|নাম হওয়া|haben|geheißen|S|||Wie heißt du?|What’s your name?||mean
+17|kaufen|to buy|কেনা|haben|gekauft|R|||Ich habe gestern ein neues Kleid gekauft.|I bought a new dress yesterday.||
+18|trinken|to drink|পান করা|haben|getrunken|S|||Was trinkst du gern?|What do you like to drink?||
+19|arbeiten|to work|কাজ করা|haben|gearbeitet|R|||Sie arbeiten von Montag bis Freitag.|They work from Monday to Friday.||
+20|machen|to do, to make|করা / বানানো|haben|gemacht|R|||Was machen Sie gern?|What do you like to do?||
+21|fragen|to ask|জিজ্ঞাসা করা|haben|gefragt|R|||Warum fragst du sie nicht?|Why don’t you ask her?||
+22|antworten|to answer|উত্তর দেওয়া|haben|geantwortet|R|||Sie hat mir noch nicht geantwortet.|She hasn’t answered me yet.||
+23|hören|to hear, to listen|শোনা|haben|gehört|R|||Ich höre gern Musik.|I like listening to music.||
+24|sagen|to say, to tell|বলা|haben|gesagt|R|||Was hat die Lehrerin gesagt?|What did the teacher say?||tell
+25|verstehen|to understand|বোঝা|haben|verstanden|S|||Hast du alles richtig verstanden?|Did you understand everything correctly?||
+26|denken|to think|চিন্তা করা|haben|gedacht|X|||Was denkst du darüber?|What do you think about that?|The PDF writes “daran”; for “what do you think of that?” German uses darüber.|think
+27|suchen|to look for|খোঁজা|haben|gesucht|R|||Ich suche eine neue Wohnung.|I’m looking for a new apartment.||
+28|finden|to find; to think (an opinion)|খুঁজে পাওয়া; মনে করা|haben|gefunden|S|||Sie hat einen Fehler im Text gefunden.|She found a mistake in the text.||think
+29|bleiben|to stay|রয়ে যাওয়া|sein|geblieben|S|||Ich bleibe morgen zu Hause.|I’m staying at home tomorrow.||
+30|bringen|to bring, to take|আনা / নিয়ে যাওয়া|haben|gebracht|X|||Ich habe meine Tochter zur Schule gebracht.|I took my daughter to school.||
+31|bedeuten|to mean|অর্থ বোঝানো|haben|bedeutet|R|||Was bedeutet dieses Wort?|What does this word mean?||mean
+32|besuchen|to visit|বেড়াতে যাওয়া|haben|besucht|R|||Ich besuche meine Familie jeden Monat.|I visit my family every month.||
+33|schmecken|to taste|স্বাদ লাগা|haben|geschmeckt|R|||Das schmeckt gut.|That tastes good.|The PDF writes “Schmecke”; the infinitive is schmecken.|
+34|schreiben|to write|লেখা|haben|geschrieben|S|||Ich schreibe einen Brief.|I’m writing a letter.||
+35|spielen|to play|খেলা|haben|gespielt|R|||Wir haben gestern Fußball gespielt.|We played football yesterday.||
+36|lernen|to learn, to study|শেখা|haben|gelernt|R|||Wo hast du Deutsch gelernt?|Where did you learn German?||study
+37|zeigen|to show|দেখানো|haben|gezeigt|R|||Ich will dir etwas zeigen.|I want to show you something.||
+38|kochen|to cook|রান্না করা|haben|gekocht|R|||Meine Mutter kocht gern.|My mother likes cooking.||
+39|beginnen|to begin|শুরু করা|haben|begonnen|S|||Der Unterricht hat schon begonnen.|The lesson has already started.||begin
+40|stehen|to stand|দাঁড়িয়ে থাকা|haben|gestanden|S|||Er steht im Stau.|He is stuck in a traffic jam.|In southern Germany and Austria people say “ist gestanden”.|
+41|liegen|to lie, to be located|শুয়ে থাকা / অবস্থিত হওয়া|haben|gelegen|S|||Das Handy liegt auf dem Tisch.|The phone is on the table.||
+42|glauben|to believe, to think|বিশ্বাস করা|haben|geglaubt|R|||Ich glaube dir.|I believe you.||think
+43|nennen|to name, to call|নাম দেওয়া|haben|genannt|X|||Wir haben unseren Hund Charlie genannt.|We named our dog Charlie.||
+44|kennen|to know (a person or place)|চেনা|haben|gekannt|X|||Kennst du Peter?|Do you know Peter?||know
+45|stellen|to put (standing up)|দাঁড় করিয়ে রাখা|haben|gestellt|R|||Wohin hast du die Vase gestellt?|Where did you put the vase?||put
+46|bekommen|to get, to receive|পাওয়া|haben|bekommen|S|||Ich bekomme immer viele Geschenke zum Geburtstag.|I always get lots of presents for my birthday.|False friend: bekommen means “to get”, not “to become” (that’s werden).|
+47|bestellen|to order|অর্ডার করা|haben|bestellt|R|||Ich habe ein Buch bei Amazon bestellt.|I ordered a book from Amazon.||
+48|erzählen|to tell (a story)|গল্প বলা|haben|erzählt|R|||Er erzählt immer die gleiche Geschichte.|He always tells the same story.||tell
+49|versuchen|to try|চেষ্টা করা|haben|versucht|R|||Ich versuche, jeden Tag Deutsch zu lernen.|I try to learn German every day.||
+50|erklären|to explain|ব্যাখ্যা করা|haben|erklärt|R|||Die Lehrerin erklärt die Grammatik.|The teacher explains the grammar.||
+51|sitzen|to sit|বসে থাকা|haben|gesessen|S|||Das Kind will nicht im Kinderwagen sitzen.|The child doesn’t want to sit in the pram.||
+52|gehören|to belong to|কারো হওয়া|haben|gehört|R|||Wem gehört dieses Buch?|Who does this book belong to?||
+53|warten|to wait|অপেক্ষা করা|haben|gewartet|R|||Habt ihr lange gewartet?|Have you been waiting long?||
+54|erwarten|to expect|আশা করা|haben|erwartet|R|||Das habe ich nicht erwartet.|I didn’t expect that.||
+55|verlieren|to lose|হারানো|haben|verloren|S|||Ich habe mein Handy verloren.|I’ve lost my phone.||
+56|legen|to lay, to put (flat)|শুইয়ে রাখা|haben|gelegt|R|||Clara legt das Buch auf den Tisch.|Clara puts the book on the table.|The PDF example says “liegt”, but when you put something somewhere it’s legen: Clara legt das Buch …|put
+57|schließen|to close, to lock|বন্ধ করা|haben|geschlossen|S|||Anna schließt das Fenster.|Anna closes the window.||
+58|öffnen|to open|খোলা|haben|geöffnet|R|||Peter öffnet die Tür.|Peter opens the door.||
+59|studieren|to study (at university)|পড়াশোনা করা|haben|studiert|R|||Was hast du studiert?|What did you study?||study
+60|fehlen|to be missing, to be absent|অনুপস্থিত থাকা|haben|gefehlt|R|||Wer fehlt heute?|Who is absent today?||
+61|vergleichen|to compare|তুলনা করা|haben|verglichen|S|||Wir vergleichen die Preise in Deutschland und in der Schweiz.|We compare prices in Germany and Switzerland.||
+62|singen|to sing|গান গাওয়া|haben|gesungen|S|||Ich singe nicht gern.|I don’t like singing.||
+63|tanzen|to dance|নাচা|haben|getanzt|R|||Sie tanzt Salsa.|She dances salsa.||
+64|bezahlen|to pay|টাকা দেওয়া|haben|bezahlt|R|||Er bezahlt die Rechnung.|He pays the bill.||
+65|verdienen|to earn, to deserve|উপার্জন করা|haben|verdient|R|||Tom verdient viel Geld.|Tom earns a lot of money.||
+66|reden|to talk|আলাপ করা|haben|geredet|R|||Sie redet mit der Lehrerin.|She’s talking to the teacher.||speak
+67|brauchen|to need|প্রয়োজন হওয়া|haben|gebraucht|R|||Ich brauche mehr Zeit.|I need more time.||
+68|passieren|to happen|ঘটা|sein|passiert|R|||Das passiert manchmal.|That happens sometimes.||
+69|kosten|to cost|দাম হওয়া|haben|gekostet|R|||Wie viel kostet ein Kilo Tomaten?|How much does a kilo of tomatoes cost?||
+70|senden|to send|প্রেরণ করা|haben|gesendet|R|||Ich sende dir eine SMS.|I’m sending you a text message.|You may also see the older form “gesandt”.|send
+71|schicken|to send|পাঠানো|haben|geschickt|R|||Er schickt eine Postkarte.|He sends a postcard.||send
+72|heiraten|to marry, to get married|বিয়ে করা|haben|geheiratet|R|||Wir heiraten Ende Juni.|We’re getting married at the end of June.||
+73|sterben|to die|মারা যাওয়া|sein|gestorben|S||stirb|Er ist vor zehn Jahren gestorben.|He died ten years ago.||
+74|feiern|to celebrate|উদযাপন করা|haben|gefeiert|R|||Warum hast du deinen Geburtstag nicht gefeiert?|Why didn’t you celebrate your birthday?||
+75|lieben|to love|ভালোবাসা|haben|geliebt|R|||Ich liebe dich.|I love you.||
+76|wiederholen|to repeat|পুনরাবৃত্তি করা|haben|wiederholt|R|||Können Sie das bitte wiederholen?|Can you repeat that, please?||
+77|teilen|to share|ভাগ করা|haben|geteilt|R|||Ich teile deine Meinung nicht.|I don’t share your opinion.||
+78|wissen|to know (a fact)|জানা|haben|gewusst|X|||Das weiß ich leider nicht.|Unfortunately I don’t know that.||know
+79|fahren|to drive, to go (by vehicle)|গাড়িতে যাওয়া / চালানো|sein|gefahren|S||fähr|Er fährt mit dem Bus zur Arbeit.|He goes to work by bus.|When you drive something (Ich habe das Auto gefahren), it takes haben.|go
+80|essen|to eat|খাওয়া|haben|gegessen|S||iss|Mein Sohn isst jeden Tag Schokolade.|My son eats chocolate every day.||
+81|schlafen|to sleep|ঘুমানো|haben|geschlafen|S||schläf|Hast du gut geschlafen?|Did you sleep well?||
+82|geben|to give|দেওয়া|haben|gegeben|S||gib|Laura gibt mir das Buch.|Laura gives me the book.||
+83|sehen|to see|দেখা|haben|gesehen|S||sieh|Siehst du den Hund da?|Do you see the dog there?||see
+84|sprechen|to speak|কথা বলা|haben|gesprochen|S||sprich|Anna spricht zu schnell.|Anna speaks too fast.||speak
+85|nehmen|to take|নেওয়া|haben|genommen|S||nimm|Ich habe Urlaub genommen.|I took a holiday.||
+86|lesen|to read|পড়া|haben|gelesen|S||lies|Ich habe dieses Buch noch nicht gelesen.|I haven’t read this book yet.||
+87|vergessen|to forget|ভুলে যাওয়া|haben|vergessen|S||vergiss|Sie vergisst immer ihre Schlüssel.|She always forgets her keys.||
+88|waschen|to wash|ধোয়া|haben|gewaschen|S||wäsch|Ich habe meine Haare gewaschen.|I washed my hair.||
+89|laufen|to run, to walk|দৌড়ানো / হাঁটা|sein|gelaufen|S||läuf|Die Frau läuft über die Straße.|The woman walks across the street.||go
+90|tragen|to carry, to wear|বহন করা / পরা|haben|getragen|S||träg|Ich habe gestern ein weißes Kleid getragen.|I wore a white dress yesterday.||
+91|aussehen|to look (appear)|দেখতে লাগা|haben|ausgesehen|S|aus|sieh|Du siehst immer gut aus.|You always look good.||see
+92|anfangen|to start, to begin|আরম্ভ করা|haben|angefangen|S|an|fäng|Der Unterricht fängt um 12 Uhr an.|The lesson starts at 12 noon.||begin
+93|anrufen|to call (on the phone)|ফোন করা|haben|angerufen|S|an||Ich rufe meine Oma an.|I’m calling my grandma.||
+94|aufstehen|to get up, to stand up|ঘুম থেকে ওঠা / উঠে দাঁড়ানো|sein|aufgestanden|S|auf||Ich bin heute um 6 Uhr aufgestanden.|I got up at 6 a.m. today.||
+95|einladen|to invite|দাওয়াত দেওয়া|haben|eingeladen|S|ein|läd|Ich lade dich zum Essen ein.|I’m inviting you to dinner.||
+96|fühlen|to feel|অনুভব করা|haben|gefühlt|R|||Ich fühle mich schuldig.|I feel guilty.||
+97|interessieren|to interest|আগ্রহী করা|haben|interessiert|R|||Sie interessiert sich für Kunst.|She is interested in art.|sich interessieren für = to be interested in.|
+98|erinnern|to remind; to remember (sich erinnern)|মনে করিয়ে দেওয়া; মনে পড়া|haben|erinnert|R|||Maria erinnert sich an ihre Kindheit in Spanien.|Maria remembers her childhood in Spain.|sich erinnern an = to remember.|
+99|treffen|to meet|দেখা করা|haben|getroffen|S||triff|Ich habe ihn gestern getroffen.|I met him yesterday.||
+100|vorstellen|to introduce; to imagine|পরিচয় করানো; কল্পনা করা|haben|vorgestellt|R|vor||Ich habe mir Deutschland anders vorgestellt.|I imagined Germany differently.|sich etwas vorstellen = to imagine something.|`;
+
+/* ===================== shared helpers ===================== */
+const $ = id => document.getElementById(id);
+const S = {mode:"article",lang:"en",cats:new Set(CATS.map((_,i)=>i)),count:"20",auto:"on",rate:"normal",vmode:"present",vset:"all"};
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+const mean = w => S.lang==="en" ? w.en : w.bn;
+const meanHTML = w => S.lang==="en" ? esc(w.en) : `<span class="bn">${esc(w.bn)}</span>`;
+const artWord = w => w.a ? `<span class="art-${w.a}">${w.a}</span> ${esc(w.w)}` : esc(w.w);
+const take = (arr, n) => n==="all" ? arr : arr.slice(0, +n);
+
+/* ---------- settings chips (shared across modules) ---------- */
+function syncChips(){
+  document.querySelectorAll(".chips[data-key]").forEach(el=>{
+    el.querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed", String(S[el.dataset.key])===c.dataset.v));
+  });
+}
+document.addEventListener("click",e=>{
+  const b=e.target.closest(".chips[data-key] .chip"); if(!b) return;
+  const key=b.parentElement.dataset.key; S[key]=b.dataset.v; syncChips();
+  if(key==="mode") renderCats();
+  if(key==="vmode"||key==="vset") renderVHint();
+});
+
+/* ---------- voice ---------- */
+const ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/></svg>`;
+const canSpeak = "speechSynthesis" in window;
+let deVoice = null;
+function loadVoices(){
+  let msg = "";
+  if(!canSpeak) msg = "This browser can’t read words aloud. Try Chrome, Edge or Safari.";
+  else {
+    const vs = speechSynthesis.getVoices();
+    deVoice = vs.find(v=>/^de[-_]DE/i.test(v.lang)) || vs.find(v=>/^de/i.test(v.lang)) || null;
+    msg = deVoice ? `German voice: ${deVoice.name}` : vs.length ? "No German voice found on this device, so words may sound wrong. Add German in your device’s text-to-speech settings." : "";
+  }
+  document.querySelectorAll(".voiceHint").forEach(el=>el.textContent=msg);
+}
+if(canSpeak){ loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; } else loadVoices();
+const spoken = w => w.w.replace(/\s*\((.*)\)/, ", $1");
+const full = w => (w.a ? w.a+" " : "") + spoken(w);
+function say(text, btn){
+  if(!canSpeak || !text) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = deVoice ? deVoice.lang : "de-DE";
+  if(deVoice) u.voice = deVoice;
+  u.rate = S.rate==="slow" ? 0.6 : 0.95;
+  if(btn){ btn.classList.add("playing"); u.onend = u.onerror = ()=>btn.classList.remove("playing"); }
+  speechSynthesis.speak(u);
+}
+// any element with data-t speaks its text
+document.addEventListener("click",e=>{
+  const t=e.target.closest("[data-t]"); if(!t) return;
+  if(t.closest("summary")) e.preventDefault();
+  say(t.dataset.t, t);
+});
+const sayBtn = (text, label) => canSpeak ? `<button class="ex" data-t="${esc(text)}" aria-label="Listen">${ICON} ${label||""}</button>` : (label||"");
+
+/* ===================== shared quiz engine ===================== */
+let Q=[], qi=0, score=0, answered=false, missed=[], quizMod="nouns";
+function runQuiz(qs, mod){
+  if(!qs.length) return false;
+  Q=qs; qi=0; score=0; missed=[]; quizMod=mod;
+  show("quiz"); renderQ(); return true;
+}
+function renderQ(){
+  answered=false;
+  const q=Q[qi];
+  $("qCount").textContent=`Question ${qi+1} of ${Q.length}`;
+  $("qScore").textContent=`${score} correct`;
+  $("qBar").style.width=`${qi/Q.length*100}%`;
+  $("qFeedback").innerHTML=""; $("qNextRow").hidden=true;
+  $("qType").textContent=q.prompt;
+  $("qWord").className="word"+(q.size?" "+q.size:"");
+  $("qWord").innerHTML=q.word;
+  $("qGloss").innerHTML=q.gloss||"";
+  const o=$("qOpts");
+  o.className="opts"+(q.layout?" "+q.layout:"");
+  o.innerHTML=q.opts.map((x,i)=>`<button class="opt ${x.cls||""}" data-v="${esc(x.v)}">${q.layout?`${x.html}<kbd>${i+1}</kbd>`:`<kbd>${i+1}</kbd>${x.html}`}</button>`).join("");
+  const sb=$("speakBtn");
+  sb.hidden = !canSpeak || !q.sayBefore;
+  sb.setAttribute("aria-label","Listen to the pronunciation");
+  sb.onclick = ()=>say(answered ? (q.sayAfter||q.sayBefore) : q.sayBefore, sb);
+  if(S.auto==="on" && q.sayBefore) say(q.sayBefore, sb);
+  o.querySelector(".opt").focus({preventScroll:true});
+}
+$("qOpts").addEventListener("click",e=>{const b=e.target.closest(".opt"); if(b) answer(b);});
+function answer(btn){
+  if(answered) return; answered=true;
+  const q=Q[qi], ok = btn.dataset.v===String(q.ans);
+  if(ok) score++; else missed.push(q);
+  $("qOpts").querySelectorAll(".opt").forEach(b=>{
+    b.disabled=true;
+    if(b.dataset.v===String(q.ans)) b.classList.add("right");
+    else if(b===btn) b.classList.add("wrong"); else b.classList.add("dim");
+  });
+  if(q.reveal) q.reveal();
+  $("qFeedback").innerHTML = `<div class="feedback ${ok?"ok":"no"}"><p class="verdict">${ok?"Richtig!":"Not quite."}</p>${q.feedback(ok)}</div>`;
+  $("qScore").textContent=`${score} correct`;
+  if(S.auto==="on" && q.sayAfter) say(q.sayAfter, $("speakBtn"));
+  $("qNextRow").hidden=false;
+  $("nextBtn").textContent = qi===Q.length-1 ? "See my result" : "Next question";
+  $("nextBtn").focus({preventScroll:true});
+}
+function next(){ qi++; if(qi>=Q.length) results(); else renderQ(); }
+$("nextBtn").onclick=next;
+$("quitBtn").onclick=()=>{ Q=Q.slice(0,qi+1); results(); };
+document.addEventListener("keydown",e=>{
+  if($("quiz").hidden) return;
+  if(!answered && /^[1-4]$/.test(e.key)){ const b=$("qOpts").querySelectorAll(".opt")[+e.key-1]; if(b){e.preventDefault();answer(b);} }
+  else if(answered && e.key==="Enter" && document.activeElement!==$("quitBtn")){ e.preventDefault(); next(); }
+});
+function results(){
+  show("results");
+  const n=Q.length, pct=Math.round(score/n*100);
+  $("rScore").textContent=`${score} / ${n}`;
+  $("rMsg").textContent = pct===100 ? "Perfect score. Ausgezeichnet!" : pct>=80 ? `${pct}%. Sehr gut! Just a few to review below.` : pct>=50 ? `${pct}%. Good progress. Practise the ones below and try again.` : `${pct}%. Keep going: practise the ones below a few times and they’ll stick.`;
+  const uniq=[...new Map(missed.map(q=>[q.key,q])).values()];
+  $("retryMissBtn").hidden = !uniq.length;
+  $("rMiss").innerHTML = uniq.map(q=>q.miss).join("");
+  $("retryMissBtn").onclick=()=>runQuiz(shuffle(uniq.map(q=>q.redo())), quizMod);
+}
+$("newBtn").onclick=()=>show(quizMod==="verbs"?"vsetup":"setup");
+
+/* ===================== NOUNS & WORDS module ===================== */
+
+const SET1=[...Array(14).keys()], SET2=[...Array(8).keys()].map(i=>i+14);
+const NOUNCATS=[...Array(16).keys()], WORDCATS=[16,17,18,19,20,21];
+const sameSet=(a)=>S.cats.size===a.length && a.every(i=>S.cats.has(i));
+function renderCats(){
+  const all = S.cats.size===CATS.length, s1=sameSet(SET1), s2=sameSet(SET2), solo=all||s1||s2;
+  let h = `<button class="chip" data-c="all" aria-pressed="${all}">Everything</button><button class="chip" data-c="set1" aria-pressed="${s1}">200 nouns list</button><button class="chip" data-c="set2" aria-pressed="${s2}">A1 500 words list</button>`;
+  const art = S.mode==="article";
+  const chip = i => `<button class="chip" data-c="${i}" aria-pressed="${!solo&&S.cats.has(i)}">${CATS[i]} <small>${WORDS.filter(w=>w.c===i).length}</small></button>`;
+  h += `<span class="chiplabel">Nouns <small>(with der, die, das)</small></span>` + NOUNCATS.map(chip).join("");
+  if(!art) h += `<span class="chiplabel">Word meanings <small>(no article)</small></span>` + WORDCATS.map(chip).join("");
+  $("catChips").innerHTML=h;
+  const sel = WORDS.filter(w=>S.cats.has(w.c) && (!art || w.a));
+  $("catHint").textContent = sel.length ? (art ? `${sel.length} nouns selected. Verbs, adjectives and other words without an article are practised in Meanings.` : `${sel.length} words selected.`) : (art ? "Pick at least one noun topic." : "Pick at least one topic.");
+  $("startBtn").disabled = !sel.length;
+}
+$("catChips").addEventListener("click",e=>{
+  const b=e.target.closest(".chip"); if(!b) return;
+  const c=b.dataset.c, solo = S.cats.size===CATS.length || sameSet(SET1) || sameSet(SET2);
+  if(c==="all") S.cats=new Set(CATS.map((_,i)=>i));
+  else if(c==="set1") S.cats=new Set(SET1);
+  else if(c==="set2") S.cats=new Set(SET2);
+  else { const i=+c; if(solo) S.cats=new Set([i]); else S.cats.has(i)?S.cats.delete(i):S.cats.add(i); }
+  renderCats();
+});
+
+/* ---------- word list ---------- */
+function renderList(){
+  const q=$("search").value.trim().toLowerCase();
+  let h="";
+  [["Nouns with articles","Learn each one together with der, die or das.",NOUNCATS],["Word meanings","Verbs, adjectives and other words. These have no article, so just learn the meaning.",WORDCATS]].forEach(([title,sub,cats],si)=>{
+  let part="";
+  cats.forEach(i=>{ const c=CATS[i];
+    const ws=WORDS.filter(w=>w.c===i && (!q || (w.a+" "+w.w+" "+w.en+" "+w.bn).toLowerCase().includes(q)));
+    if(!ws.length) return;
+    part+=`<div class="group"><h3>${c}</h3><div class="tbl-wrap"><table>${ws.map(w=>`<tr><td>${canSpeak?`<button class="speak mini" data-say="${w.id}" aria-label="Listen to ${esc((w.a?w.a+" ":"")+w.w)}">${ICON}</button>`:""}</td><td>${artWord(w)}</td><td>${esc(w.en)}</td><td class="bn">${esc(w.bn)}</td><td>${ruleTags(w)}</td></tr>`).join("")}</table></div></div>`;
+  });
+  if(part) h+=`<h2 class="section-title">${title}</h2><p class="section-sub">${sub}</p>`+part;
+  });
+  $("listBody").innerHTML = h || `<p class="hint">No words match “${esc(q)}”. Try a shorter search.</p>`;
+}
+$("search").addEventListener("input",renderList);
+$("listBody").addEventListener("click",e=>{
+  const b=e.target.closest("[data-say]"); if(!b) return;
+  const w=WORDS[+b.dataset.say]; say(full(w), b);
+});
+
+/* ---------- rules ---------- */
+let xi = 0;
+const ex = (a,w,en,bn) => ({id:1000+(xi++),a,w,en,bn,c:-1,note:""});
+const RULES = [
+ {lvl:"Always",a:"die",tag:"plural",title:"Plural nouns",desc:"Every plural noun takes die, whatever its singular article is: der Zahn → die Zähne, das Buch → die Bücher.",test:w=>/plural/.test(w.en),extra:[ex("die","Bücher","books (plural)","বইগুলো"),ex("die","Kinder","children (plural)","শিশুরা"),ex("die","Häuser","houses (plural)","বাড়িগুলো")]},
+ {lvl:"Always",a:"",tag:"A + B",title:"Compound words: the last word decides",desc:"When two words join, the article comes from the last word. Kranken + das Haus = das Krankenhaus. Fuß + das Gelenk = das Fußgelenk. Learn the short words and you know the long ones.",test:w=>/Compound|\+ (der|die|das) /.test(w.note),extra:[]},
+ {lvl:"Always",a:"die",tag:"-ung",title:"Words ending in -ung",desc:"One of the safest rules in German, with no exceptions to worry about.",test:w=>/ung$/.test(w.w),extra:[]},
+ {lvl:"Always",a:"die",tag:"-heit -keit -schaft",title:"Words ending in -heit, -keit or -schaft",desc:"These endings turn words into ideas or qualities, and they are always die.",test:w=>/(heit|keit|schaft)$/.test(w.w),extra:[ex("die","Freiheit","freedom","স্বাধীনতা"),ex("die","Freundschaft","friendship","বন্ধুত্ব")]},
+ {lvl:"Always",a:"die",tag:"-ion -tät",title:"Words ending in -ion or -tät",desc:"Mostly borrowed words that look like English words ending in -ion or -ity. Always die.",test:w=>/(ion|tät)\)?$/.test(w.w),extra:[]},
+ {lvl:"Always",a:"die",tag:"-ie -ei",title:"Words ending in a stressed -ie or -ei",desc:"die Melodie, die Allergie, die Datei. Careful: das Knie is an exception because its -ie is not stressed.",test:w=>/(ie|ei)$/.test(w.w)&&w.w!=="Knie",extra:[ex("die","Bäckerei","bakery","বেকারি"),ex("die","Polizei","police","পুলিশ")]},
+ {lvl:"Always",a:"die",tag:"female",title:"Female people, and -in",desc:"Women and female roles are die: die Frau, die Mutter. Add -in to a male job to make the female form: der Lehrer → die Lehrerin.",test:w=>(w.a==="die"&&/in$/.test(w.w)&&/female/.test(w.en))||["Frau","Mutter"].includes(w.w),extra:[]},
+ {lvl:"Always",a:"der",tag:"male",title:"Male people",desc:"Men and male roles are der: der Mann, der Vater, der Sohn, der Arzt, der Lehrer.",test:w=>w.a==="der"&&(/\(male\)/.test(w.en)||["Musiker","Nutzer","Benutzer","Notarzt","Mann","Herr","Vater","Sohn"].includes(w.w)),extra:[]},
+ {lvl:"Always",a:"das",tag:"-chen -lein",title:"Small things ending in -chen or -lein",desc:"These endings make something small or cute, and they are always das, even for people: das Mädchen (girl). Careful: der Knochen and der Kuchen also end in -chen, but they are not small forms.",test:()=>false,extra:[ex("das","Mädchen","girl","মেয়ে"),ex("das","Brötchen","bread roll","বনরুটি"),ex("das","Häuschen","little house","ছোট বাড়ি")]},
+ {lvl:"Always",a:"das",tag:"-zeug",title:"Words ending in -zeug",desc:"Zeug means ‘stuff’ or ‘things’, and it is always das.",test:w=>/zeug$/.test(w.w),extra:[ex("das","Spielzeug","toy","খেলনা"),ex("das","Werkzeug","tool","যন্ত্রপাতি")]},
+ {lvl:"Always",a:"das",tag:"verb → noun",title:"Verbs used as nouns",desc:"Write a verb with a capital letter and it becomes a das noun: essen (to eat) → das Essen, leben (to live) → das Leben, unternehmen → das Unternehmen.",test:w=>["Röntgen","Leben","Unternehmen"].includes(w.w),extra:[ex("das","Essen","food; eating","খাবার"),ex("das","Lesen","reading","পড়া")]},
+ {lvl:"Usually",a:"die",tag:"-e",title:"Words ending in -e",desc:"About 9 out of 10 are die: die Schule, die Lampe, die Tasse. Exceptions in your lists: der Käse, der Name, das Auge, das Ende, das Interesse, das Gemüse.",test:w=>/e$/.test(w.w),extra:[]},
+ {lvl:"Usually",a:"das",tag:"Ge-",title:"Words starting with Ge-",desc:"Usually das: das Gesicht, das Gewicht, das Gemüse, das Gelenk. Exceptions: die Geige, die Geschichte, and die Gesundheit and die Gesellschaft (their endings win).",test:w=>/^Ge/.test(w.w),extra:[]},
+ {lvl:"Usually",a:"das",tag:"-ment",title:"Words ending in -ment",desc:"Usually das, and often similar to English: das Instrument, das Medikament, das Dokument. Exception: der Moment.",test:w=>/ment$/.test(w.w),extra:[ex("das","Argument","argument","যুক্তি")]},
+ {lvl:"Usually",a:"der",tag:"-or -ismus -ling",title:"Words ending in -or, -ismus or -ling",desc:"Usually der: der Monitor, der Motor, der Tourismus, der Frühling.",test:w=>/(or|ismus|ling)$/.test(w.w),extra:[ex("der","Motor","engine","ইঞ্জিন"),ex("der","Tourismus","tourism","পর্যটন"),ex("der","Frühling","spring (season)","বসন্ত")]},
+ {lvl:"Usually",a:"der",tag:"weather",title:"Weather and the sky",desc:"Usually der: der Regen, der Schnee, der Mond. Exceptions: die Sonne and das Wetter.",test:w=>["Regen","Schnee","Mond","Sonne","Wetter"].includes(w.w),extra:[]},
+ {lvl:"Usually",a:"der",tag:"days & times",title:"Days, months, seasons and times of day",desc:"Usually der: der Tag, der Monat, der Morgen, der Abend, der Montag, der Sommer. Exception: die Nacht.",test:w=>["Tag","Monat","Morgen","Abend","Nacht"].includes(w.w),extra:[ex("der","Montag","Monday","সোমবার"),ex("der","Januar","January","জানুয়ারি"),ex("der","Sommer","summer","গ্রীষ্মকাল")]},
+ {lvl:"Usually",a:"die",tag:"-ik",title:"Words ending in -ik",desc:"Usually die: die Musik, die Politik, die Klinik.",test:w=>/ik$/.test(w.w),extra:[ex("die","Technik","technology","প্রযুক্তি")]},
+ {lvl:"Usually",a:"das",tag:"-nis",title:"Words ending in -nis",desc:"Usually das: das Ergebnis, das Zeugnis, das Geheimnis.",test:w=>/nis$/.test(w.w),extra:[ex("das","Zeugnis","certificate, report card","সনদপত্র"),ex("das","Geheimnis","secret","গোপন কথা")]},
+ {lvl:"Weak",a:"der",tag:"-er",title:"Machines and tools ending in -er",desc:"Often der: der Computer, der Drucker, der Fernseher. But many -er words break it (das Fenster, das Messer, das Wasser, die Butter), so don’t trust it on its own.",test:w=>/er$/.test(w.w),extra:[]}
+];
+RULES.push({lvl:"None",a:"",tag:"no rule",title:"No rule: learn these by heart",desc:"None of the rules above fit these words, so you just have to remember each one with its article. Say them aloud and picture the colours: a blue Tisch, a red Tür, a green Buch.",test:w=>!RULES.some(r=>r.lvl!=="None"&&r.test(w)),extra:[]});
+const rulePool = r => [...WORDS.filter(w=>w.a && r.test(w)), ...r.extra];
+const LVL = {Always:"always works",Usually:"usually works",Weak:"weak rule"};
+function rulesFor(w){
+  if(!w.a) return [];
+  let rs = RULES.filter(r=>r.lvl!=="None" && (r.test(w) || r.extra.some(x=>x.id===w.id)));
+  if(rs.some(r=>r.lvl!=="Weak")) rs = rs.filter(r=>r.lvl!=="Weak");
+  return rs.sort((a,b)=>Object.keys(LVL).indexOf(a.lvl)-Object.keys(LVL).indexOf(b.lvl));
+}
+function ruleHTML(w, ok){
+  if(!w.a) return "";
+  const rs = rulesFor(w).slice(0,2);
+  if(!rs.length) return `<div class="rulehint"><p class="rh-title">No rule for this word.</p><p>Learn it together with its article: “${w.a} ${esc(w.w)}”. Say it aloud a few times.</p></div>`;
+  return rs.map(r=>{
+    const exc = r.a && r.a!==w.a;
+    return `<div class="rulehint ${r.a?"r-"+r.a:""}"><p class="rh-title">${ok?"Rule":"Remember this rule"}: <span class="rh-tag">${esc(r.tag)}</span>${r.a?` → <span class="art-${r.a}">${r.a}</span>`:""} <small>(${LVL[r.lvl]})</small></p>${exc?`<p><strong>This word is an exception:</strong> it’s ${w.a} ${esc(w.w)}, not ${r.a}.</p>`:""}${ok&&!exc?"":`<p>${esc(r.desc)}</p>`}</div>`;
+  }).join("");
+}
+function ruleTags(w){
+  if(!w.a) return "";
+  const rs = rulesFor(w);
+  if(!rs.length) return `<span class="rtag">no rule</span>`;
+  return rs.map(r=>{const exc=r.a&&r.a!==w.a; return `<span class="rtag ${r.a?"r-"+r.a:""} ${exc?"exc":""}">${esc(r.tag)}${exc?" (exception)":""}</span>`;}).join("");
+}
+
+function renderRules(){
+  const groups=[["Always","Rules that always work","Learn these first. If a word fits one, you can trust the article."],["Usually","Rules that usually work","Good guesses, but each has a few exceptions."],["Weak","A weak rule","Use this only as a last guess."],["None","Everything else",""]];
+  let h=`<div class="golden"><h2>The golden rule</h2><p>Always learn a noun together with its article: “das Buch”, never just “Buch”. The rules below help you guess, and together they cover about half of all nouns. Tap any example to hear it, and use the practise buttons to test yourself on one rule at a time.</p></div>`;
+  groups.forEach(([lvl,label,sub])=>{
+    const rs=RULES.filter(r=>r.lvl===lvl); if(!rs.length) return;
+    h+=`<h2 class="rgroup">${label}</h2>${sub?`<p class="rgroup-sub">${sub}</p>`:""}`;
+    rs.forEach(r=>{
+      const i=RULES.indexOf(r), pool=rulePool(r), shown=pool.slice(0, lvl==="None"?12:8);
+      h+=`<article class="rule ${r.a?"r-"+r.a:""}"><div class="rhead"><span class="badge">${esc(r.tag)}</span>${r.a?`<span class="art-${r.a} rart">→ ${r.a}</span>`:""}</div>
+        <h3>${esc(r.title)}</h3><p>${esc(r.desc)}</p>
+        <div class="exs">${shown.map(w=>`<button class="ex" data-t="${esc(full(w))}" aria-label="Listen to ${esc((w.a?w.a+" ":"")+w.w)}">${artWord(w)}</button>`).join("")}${pool.length>shown.length?`<span class="hint" style="margin:4px 0 0">and ${pool.length-shown.length} more</span>`:""}</div>
+        ${pool.length>=2?`<button class="btn ghost small" data-pr="${i}">Practise ${pool.length>20?"20 of these "+pool.length:"these "+pool.length} words</button>`:""}</article>`;
+    });
+  });
+  $("rules").innerHTML=h;
+}
+$("rules").addEventListener("click",e=>{
+  const p=e.target.closest("[data-pr]"); if(!p) return;
+  const pool=rulePool(RULES[+p.dataset.pr]);
+  startNounQuiz(pool, "article", pool.length>20 ? "20" : "all");
+});
+
+function nounQ(w, type){
+  type = !w.a ? "meaning" : type==="mixed" ? (Math.random()<.5?"article":"meaning") : type;
+  const base = {key:"n"+w.id+type, redo:()=>nounQ(w,type),
+    miss:`<li><span>${artWord(w)} ${ruleTags(w)}</span><span>${esc(w.en)} · <span class="bn">${esc(w.bn)}</span></span></li>`,
+    feedback: ok => `<p>${artWord(w)} means <strong>${esc(w.en)}</strong> · <span class="bn">${esc(w.bn)}</span></p>${w.note?`<p class="tip">${esc(w.note)}</p>`:""}${type==="article"?ruleHTML(w,ok):""}`};
+  if(type==="article") return {...base, prompt:"Which article goes with this noun?",
+    word:`<span class="slot" id="slot">?</span>${esc(w.w)}`, gloss:meanHTML(w), layout:"three",
+    opts:["der","die","das"].map(a=>({v:a,html:a,cls:"a-"+a})), ans:w.a, sayBefore:spoken(w), sayAfter:full(w),
+    reveal:()=>{const s=$("slot"); s.textContent=w.a; s.style.color=`var(--${w.a})`; s.style.borderColor=`var(--${w.a})`;}};
+  const g = grp(w), seen = new Set([mean(w)]), d=[];
+  const pick = list => { for(const x of shuffle(list)){ if(d.length>=3) break; const t=mean(x); if(grp(x)!==g && x.w!==w.w && !seen.has(t)){seen.add(t);d.push(x);} } };
+  pick(WORDS.filter(x=>x.c===w.c && x.id!==w.id)); if(d.length<3) pick(WORDS.filter(x=>x.id!==w.id));
+  return {...base, prompt:"What does this word mean?", word:artWord(w), gloss:"", layout:"",
+    opts:shuffle([w,...d]).map(x=>({v:x.id,html:meanHTML(x)})), ans:w.id, sayBefore:full(w), sayAfter:null};
+}
+function startNounQuiz(words, type, count){
+  if(type==="article") words = words.filter(w=>w.a);
+  if(!words.length){ show("setup"); $("catHint").textContent="These topics have no nouns, so there are no articles to practise. Pick a noun topic or switch to Meanings."; return; }
+  runQuiz(take(shuffle(words), count).map(w=>nounQ(w,type)), "nouns");
+}
+$("startBtn").onclick = ()=> startNounQuiz(WORDS.filter(w=>S.cats.has(w.c)), S.mode, S.count);
+
+/* ===================== VERBS module ===================== */
+// n|infinitive|english|bangla|aux|partizip II|kind|separable prefix|changed stem (du/er)|example|example English|note|similar-meaning group
+const VERBS = VRAW.split("\n").map(l=>{const [n,inf,en,bn,aux,pp,kind,sep,ch,exde,exen,note,g]=l.split("|"); return {id:+n,n:+n,inf,en,bn,aux,pp,kind,sep,ch,exde,exen,note,g};});
+const PRON = ["ich","du","er/sie/es","wir","ihr","sie/Sie"];
+const PRON_SAY = ["ich","du","er","wir","ihr","sie"];
+const FORMS = {sein:"bin bist ist sind seid sind",haben:"habe hast hat haben habt haben",werden:"werde wirst wird werden werdet werden",können:"kann kannst kann können könnt können",müssen:"muss musst muss müssen müsst müssen",wollen:"will willst will wollen wollt wollen",sollen:"soll sollst soll sollen sollt sollen",dürfen:"darf darfst darf dürfen dürft dürfen",mögen:"mag magst mag mögen mögt mögen",möchten:"möchte möchtest möchte möchten möchtet möchten",wissen:"weiß weißt weiß wissen wisst wissen"};
+const CHG = {fähr:"a → ä",schläf:"a → ä",wäsch:"a → ä",träg:"a → ä",läd:"a → ä",fäng:"a → ä",läuf:"au → äu",gib:"e → i",sprich:"e → i",nimm:"e → i",iss:"e → i",vergiss:"e → i",stirb:"e → i",triff:"e → i",sieh:"e → ie",lies:"e → ie"};
+const INSEP = new Set(["verstehen","bedeuten","besuchen","bekommen","bestellen","erzählen","versuchen","erklären","gehören","erwarten","verlieren","vergleichen","bezahlen","verdienen","vergessen","erinnern","wiederholen","beginnen"]);
+const MOVE = new Set(["gehen","kommen","reisen","fliegen","fahren","laufen"]), CHANGE = new Set(["werden","sterben","aufstehen"]), ALWAYS_SEIN = new Set(["sein","bleiben","passieren"]);
+const HABEN_F = FORMS.haben.split(" "), SEIN_F = FORMS.sein.split(" ");
+
+const baseOf = v => v.sep ? v.inf.slice(v.sep.length) : v.inf;
+const isErn = b => /e[rl]n$/.test(b);
+const stemOf = v => { const b=baseOf(v); return isErn(b) ? b.slice(0,-1) : b.slice(0,-2); };
+const needsE = st => /[td]$/.test(st) || /[^lrhmnaeiouäöü][mn]$/.test(st);
+const sSound = st => /(s|ß|z|x)$/.test(st);
+function conjRaw(v, opt={}){
+  let f;
+  if(!opt.plain && FORMS[v.inf]) f = FORMS[v.inf].split(" ");
+  else {
+    const b=baseOf(v), st=stemOf(v), e = !opt.noE && needsE(st) ? "e" : "";
+    f = [st+"e", st+(sSound(st)?"t":e+"st"), st+e+"t", b, st+e+"t", b];
+    if(!opt.plain && v.ch){ const c=v.ch; f[1]=c+(sSound(c)?"t":"st"); f[2]=c+(/t$/.test(c)?"":"t"); }
+  }
+  return v.sep ? f.map(x=>x+" "+v.sep) : f;
+}
+const conj = v => conjRaw(v);
+const aux3 = v => v.aux==="sein" ? "ist" : "hat";
+function ppType(v){
+  if(!v.pp) return "";
+  if(v.sep) return "sep";
+  if(INSEP.has(v.inf)) return "insep";
+  if(/ieren$/.test(v.inf)) return "ieren";
+  if(v.pp.endsWith("en")) return "strong";
+  if(v.kind==="X"||v.kind==="Mod") return "mixed";
+  return "regular";
+}
+const isIrregular = v => v.kind==="S"||v.kind==="X"||v.inf==="sein"||v.inf==="werden";
+
+/* ---------- verb rules shown in feedback ---------- */
+const PP_TEXT = {
+  regular:["regular Partizip II","ge- + stem + -t (or -et after t/d): machen → gemacht, arbeiten → gearbeitet."],
+  strong:["irregular Partizip II","ge- + stem + -en, often with a vowel change: trinken → getrunken, schreiben → geschrieben. These have to be learnt one by one."],
+  mixed:["mixed verb","ge- + changed stem + -t: bringen → gebracht, denken → gedacht, kennen → gekannt, wissen → gewusst."],
+  ieren:["-ieren verb","Verbs ending in -ieren get no ge-: studieren → studiert, passieren → passiert."],
+  insep:["inseparable prefix","Verbs starting with be-, ver-, er-, ge-, ent- (and beginnen, wiederholen) get no extra ge-: besuchen → besucht, verstehen → verstanden."],
+  sep:["separable verb","ge- goes between the prefix and the verb: anrufen → angerufen, aufstehen → aufgestanden."]
+};
+function vRules(v, type){
+  const r=[];
+  if(type==="present"){
+    if(v.kind==="Mod") r.push(["modal verb","ich and er/sie/es are the same and have no ending (ich kann, er kann), and most modals change their vowel in the singular. In a sentence, the second verb goes to the end: Ich kann nicht schwimmen."]);
+    else if(FORMS[v.inf]) r.push(["must-know irregular","This verb doesn’t follow the normal pattern, so learn all six forms by heart."]);
+    if(v.ch){ const f=conj(v); r.push([`stem change ${CHG[v.ch]}`,`The vowel changes only with du and er/sie/es: du ${f[1]}, er ${f[2]}. All the other forms are regular.`]); }
+    if(!FORMS[v.inf] && needsE(stemOf(v)) && !v.ch) r.push(["extra -e-","The stem ends in -t, -d or a hard-to-say consonant + n, so add -e- before -st and -t: du arbeitest, er arbeitet, ihr arbeitet."]);
+    if(!FORMS[v.inf] && sSound(stemOf(v)) && !v.ch) r.push(["s-sound","The stem ends in an s-sound (s, ß, z), so du only adds -t: du heißt, du sitzt. du and er look the same."]);
+    if(v.sep) r.push(["separable verb",`The prefix “${v.sep}” splits off and goes to the end of the sentence: ${v.exde}`]);
+    if(!r.length) r.push(["regular endings","stem + -e, -st, -t, -en, -t, -en: ich mache, du machst, er macht, wir machen, ihr macht, sie machen."]);
+  }
+  if(type==="aux"){
+    if(MOVE.has(v.inf)) r.push(["movement → sein","It describes moving from one place to another, so the Perfekt uses sein."]);
+    else if(CHANGE.has(v.inf)) r.push(["change of state → sein","It describes a change of state, so the Perfekt uses sein."]);
+    else if(ALWAYS_SEIN.has(v.inf)) r.push(["always sein","sein, bleiben and passieren always use sein in the Perfekt."]);
+    else if(["sitzen","stehen","liegen"].includes(v.inf)) r.push(["no movement → haben","sitzen, stehen and liegen describe staying in one place, not moving, so they take haben."]);
+    else r.push(["most verbs → haben","Most verbs use haben, including every verb with a direct object (Ich habe das Buch gelesen)."]);
+  }
+  if(type==="pp" && v.pp) r.push(PP_TEXT[ppType(v)]);
+  return r;
+}
+const vRuleHTML = (v,type,ok) => vRules(v,type).map(([tag,txt])=>`<div class="rulehint r-verb"><p class="rh-title">${ok?"Rule":"Remember this rule"}: <span class="rh-tag">${esc(tag)}</span></p><p>${esc(txt)}</p></div>`).join("");
+function vTags(v){
+  const K={H:"irregular helper",Mod:"modal",X:"mixed",S:"irregular",R:"regular"}, t=[K[v.kind]];
+  if(v.sep) t.push("separable"); if(INSEP.has(v.inf)) t.push("inseparable"); if(/ieren$/.test(v.inf)&&!INSEP.has(v.inf)) t.push("-ieren");
+  if(v.ch) t.push(CHG[v.ch]); if(v.aux==="sein") t.push("Perfekt + sein");
+  return t.map(x=>`<span class="rtag r-verb">${esc(x)}</span>`).join("");
+}
+const conjHTML = (v,hl) => `<div class="conj">${conj(v).map((f,i)=>`<span class="${i===hl?"hl":""}"><b>${PRON[i]}</b>${esc(f)}</span>`).join("")}</div>`;
+const verbInfo = (v,hl) => `<p><span class="vb">${esc(v.inf)}</span> means <strong>${esc(v.en)}</strong> · <span class="bn">${esc(v.bn)}</span></p>${conjHTML(v,hl)}${v.pp?`<p>Perfekt: <strong>er ${aux3(v)} ${esc(v.pp)}</strong></p>`:""}<p>${sayBtn(v.exde, esc(v.exde))} <span class="tip">${esc(v.exen)}</span></p>${v.note?`<p class="tip">${esc(v.note)}</p>`:""}`;
+
+/* ---------- verb questions ---------- */
+function fillSlot(t){ const s=$("slot"); if(!s) return; s.textContent=t; s.style.color="var(--verb)"; s.style.borderColor="var(--verb)"; }
+function pickPerson(v, persons){
+  const pool = persons || (FORMS[v.inf]||v.ch ? [0,1,2,1,2,4] : [0,1,2,4,1,2,3,5]);
+  return pool[Math.floor(Math.random()*pool.length)];
+}
+function ppGuesses(v){
+  const b=baseOf(v), st=stemOf(v), pre=v.sep||"", t=needsE(st)?"et":"t";
+  const g=[];
+  if(!INSEP.has(v.inf) && !/ieren$/.test(v.inf)){
+    g.push(pre+"ge"+st+t, pre+"ge"+b, pre+st+t);
+    if(v.pp.startsWith(pre+"ge")) g.push(pre+v.pp.slice(pre.length+2));
+    if(v.sep) g.push("ge"+v.inf, "ge"+v.sep+st+t);
+  } else g.push("ge"+v.pp, "ge"+b, st+t, "ge"+st+t);
+  g.push(v.inf, pre+"ge"+st+"et", pre+"ge"+st+"en");
+  return [...new Set(g)].filter(x=>x && x!==v.pp);
+}
+const vMiss = (v,label) => `<li><span><span class="vb">${esc(v.inf)}</span> <span class="rtag r-verb">${esc(label)}</span></span><span>${esc(v.en)} · <span class="bn">${esc(v.bn)}</span></span></li>`;
+function vQ(v, type, persons){
+  if(type==="mixed"){ const ts=["meaning","present","example"].concat(v.pp?["aux","pp"]:[]); type=ts[Math.floor(Math.random()*ts.length)]; }
+  const label={meaning:"meaning",present:"present tense",aux:"haben or sein",pp:"Partizip II",example:"sentence"}[type];
+  const base={key:"v"+v.id+type, redo:()=>vQ(v,type,persons), miss:vMiss(v,label)};
+  const gl = `${esc(v.inf)} · ${meanHTML(v)}`;
+  if(type==="present"){
+    const p=pickPerson(v,persons), f=conj(v), ans=f[p];
+    const d=[...new Set([conjRaw(v,{plain:true})[p], conjRaw(v,{noE:true})[p], ...shuffle(f)])].filter(x=>x!==ans).slice(0,3);
+    return {...base, key:base.key+p, prompt:"Choose the right present-tense form.", size:"mid",
+      word:`<span class="pron">${PRON[p]}</span> <span class="slot" id="slot">?</span>`, gloss:gl, layout:"",
+      opts:shuffle([ans,...d]).map(x=>({v:x,html:esc(x)})), ans, sayBefore:v.inf, sayAfter:`${PRON_SAY[p]} ${ans}`,
+      reveal:()=>fillSlot(ans), feedback:ok=>vRuleHTML(v,"present",ok)+verbInfo(v,p)};
+  }
+  if(type==="aux"){
+    const p=pickPerson(v,[0,1,2,3,4,5]), h=HABEN_F[p], s=SEIN_F[p], ans=v.aux==="sein"?s:h;
+    return {...base, prompt:"Perfekt: haben or sein?", size:"mid",
+      word:`<span class="pron">${PRON[p]}</span> <span class="slot" id="slot">?</span> ${esc(v.pp)}`, gloss:gl, layout:"two",
+      opts:[{v:h,html:esc(h)},{v:s,html:esc(s)}], ans, sayBefore:v.pp, sayAfter:`${PRON_SAY[p]} ${ans} ${v.pp}`,
+      reveal:()=>fillSlot(ans), feedback:ok=>vRuleHTML(v,"aux",ok)+verbInfo(v)};
+  }
+  if(type==="pp"){
+    const g=ppGuesses(v), d=[g[0],g[1],...shuffle(g.slice(2))].filter(Boolean).slice(0,3), ai=v.aux==="sein"?"bin":"habe";
+    return {...base, prompt:"What’s the Partizip II?", size:"mid",
+      word:`<span class="vb">${esc(v.inf)}</span>`, gloss:`Perfekt: ich ${ai} … ___ · ${meanHTML(v)}`, layout:"",
+      opts:shuffle([v.pp,...d]).map(x=>({v:x,html:esc(x)})), ans:v.pp, sayBefore:v.inf, sayAfter:`ich ${ai} ${v.pp}`,
+      feedback:ok=>vRuleHTML(v,"pp",ok)+verbInfo(v)};
+  }
+  if(type==="example"){
+    const d=shuffle(VERBS.filter(x=>x.id!==v.id)).slice(0,3);
+    return {...base, prompt:"What does this sentence mean?", size:"small", word:esc(v.exde), gloss:"", layout:"",
+      opts:shuffle([v,...d]).map(x=>({v:x.id,html:esc(x.exen)})), ans:v.id, sayBefore:v.exde, sayAfter:null,
+      feedback:ok=>verbInfo(v)};
+  }
+  // meaning
+  const g=v.g||v.en, seen=new Set([mean(v)]), d=[];
+  for(const x of shuffle(VERBS)){ if(d.length>=3) break; const t=mean(x); if(x.id!==v.id && (x.g||x.en)!==g && !seen.has(t)){ seen.add(t); d.push(x); } }
+  return {...base, prompt:"What does this verb mean?", size:"mid", word:`<span class="vb">${esc(v.inf)}</span>`, gloss:"", layout:"",
+    opts:shuffle([v,...d]).map(x=>({v:x.id,html:meanHTML(x)})), ans:v.id, sayBefore:v.inf, sayAfter:null, feedback:ok=>verbInfo(v)};
+}
+const VSETS = {all:()=>true, "1":v=>v.n<=25, "2":v=>v.n>25&&v.n<=50, "3":v=>v.n>50&&v.n<=75, "4":v=>v.n>75,
+  modal:v=>v.kind==="Mod"||v.kind==="H"||v.inf==="wissen", change:v=>!!v.ch, sep:v=>!!v.sep, strong:v=>isIrregular(v), sein:v=>v.aux==="sein"};
+function verbPool(type, filter){
+  let pool=VERBS.filter(filter);
+  if(type==="aux"||type==="pp") pool=pool.filter(v=>v.pp);
+  return pool;
+}
+function renderVHint(){
+  const n=verbPool(S.vmode, VSETS[S.vset]).length;
+  $("vHint").textContent = n ? `${n} verbs selected.` : "No verbs in this group for that quiz type.";
+  $("vStartBtn").disabled = !n;
+}
+function startVerbQuiz(type, filter, count, persons){
+  const pool=verbPool(type, filter);
+  runQuiz(take(shuffle(pool), count).map(v=>vQ(v,type,persons)), "verbs");
+}
+$("vStartBtn").onclick=()=>startVerbQuiz(S.vmode, VSETS[S.vset], S.count);
+
+/* ---------- verb lessons ---------- */
+const ex2 = (de,en) => `<button class="ex" data-t="${esc(de)}">${canSpeak?ICON+" ":""}${esc(de)}<span class="en">${esc(en)}</span></button>`;
+const tbl = rows => `<div class="tbl-wrap"><table class="mini">${rows.map((r,i)=>`<tr>${r.map(c=>i===0?`<th>${c}</th>`:`<td>${c}</td>`).join("")}</tr>`).join("")}</table></div>`;
+const VLESSONS = [
+ {grp:"Present tense", tag:"-en", title:"The infinitive and the stem",
+  html:`<p>Almost every German verb ends in <b>-en</b> in the dictionary form: machen, wohnen, kaufen. A few end in just <b>-n</b>: feiern, erinnern. Take that ending off and you have the <b>stem</b>. Endings are added to the stem.</p>`+tbl([["infinitive","stem"],["machen","mach-"],["arbeiten","arbeit-"],["feiern","feier-"]]),
+  ex:[], pr:{label:"Practise verb meanings", type:"meaning", filter:()=>true}},
+ {grp:"Present tense", tag:"-e -st -t -en -t -en", title:"Present tense endings",
+  html:tbl([["person","ending","machen"],["ich","-e","ich mache"],["du","-st","du machst"],["er / sie / es","-t","er macht"],["wir","-en","wir machen"],["ihr","-t","ihr macht"],["sie / Sie","-en","sie machen"]])+`<p>Shortcut: the <b>wir</b>, <b>sie</b> and <b>Sie</b> forms always look like the infinitive (except sein: wir sind).</p>`,
+  ex:[["Ich wohne in Dhaka.","I live in Dhaka."],["Du lernst Deutsch.","You’re learning German."],["Wir spielen Fußball.","We play football."]],
+  pr:{label:"Practise regular verbs", type:"present", filter:v=>v.kind==="R"&&!v.sep}},
+ {grp:"Present tense", tag:"extra -e-", title:"An extra -e- after t and d",
+  html:`<p>If the stem ends in <b>-t</b> or <b>-d</b> (or a hard-to-say consonant + n, like öffn-), add <b>-e-</b> before -st and -t so it can be pronounced. This affects du, er/sie/es and ihr.</p>`+tbl([["verb","du","er / sie / es","ihr"],["arbeiten","arbeitest","arbeitet","arbeitet"],["finden","findest","findet","findet"],["öffnen","öffnest","öffnet","öffnet"]]),
+  ex:[["Sie arbeitet von Montag bis Freitag.","She works from Monday to Friday."],["Wie viel kostet das?","How much does that cost?"]],
+  pr:{label:"Practise these verbs", type:"present", filter:v=>!FORMS[v.inf]&&!v.ch&&needsE(stemOf(v)), persons:[1,2,4]}},
+ {grp:"Present tense", tag:"s-sound", title:"du with an s-sound: only add -t",
+  html:`<p>If the stem ends in <b>s, ß, z</b> or <b>tz</b>, the du form only gets <b>-t</b>, not -st. So du and er/sie/es look the same.</p>`+tbl([["verb","du","er / sie / es"],["heißen","heißt","heißt"],["sitzen","sitzt","sitzt"],["tanzen","tanzt","tanzt"],["reisen","reist","reist"]]),
+  ex:[["Wie heißt du?","What’s your name?"]],
+  pr:{label:"Practise these verbs", type:"present", filter:v=>!FORMS[v.inf]&&sSound(stemOf(v)), persons:[1,2]}},
+ {grp:"Present tense", tag:"a → ä · e → i · e → ie", title:"Stem-changing verbs",
+  html:`<p>Many irregular verbs change their vowel, but <b>only with du and er/sie/es</b>. Every other form is regular.</p>`+tbl([["change","verb","du","er / sie / es"],["a → ä","fahren","fährst","fährt"],["au → äu","laufen","läufst","läuft"],["e → i","sprechen","sprichst","spricht"],["e → ie","sehen","siehst","sieht"]])+`<p>Watch out for nehmen: du nimmst, er nimmt. And essen: du isst, er isst.</p>`,
+  ex:[["Er fährt mit dem Bus zur Arbeit.","He goes to work by bus."],["Anna spricht zu schnell.","Anna speaks too fast."],["Siehst du den Hund da?","Do you see the dog there?"]],
+  pr:{label:"Practise stem-changing verbs", type:"present", filter:v=>!!v.ch, persons:[1,2]}},
+ {grp:"Special verbs", tag:"sein · haben · werden · wissen", title:"The must-know irregular verbs",
+  html:`<p>These four don’t follow the patterns, and you’ll use them every day. Learn them by heart.</p>`+tbl([["","sein","haben","werden","wissen"],...PRON.map((p,i)=>[p,...["sein","haben","werden","wissen"].map(x=>FORMS[x].split(" ")[i])])]),
+  ex:[["Ich bin müde.","I’m tired."],["Ich habe keine Zeit.","I have no time."],["Das weiß ich leider nicht.","Unfortunately I don’t know that."]],
+  pr:{label:"Practise these four", type:"present", filter:v=>["sein","haben","werden","wissen"].includes(v.inf)}},
+ {grp:"Special verbs", tag:"können · müssen · dürfen …", title:"Modal verbs",
+  html:`<ul><li><b>ich</b> and <b>er/sie/es</b> are the same, with no ending: ich kann, er kann.</li><li>Most change their vowel in the singular: können → ich kann, müssen → ich muss, dürfen → ich darf, wollen → ich will.</li><li>The second verb goes to the <b>end</b>, in its infinitive form: Ich kann nicht <b>schwimmen</b>.</li></ul>`+tbl([["modal","meaning"],["können","can, to be able to"],["müssen","must, to have to"],["dürfen","may, to be allowed to"],["sollen","should"],["wollen","to want"],["mögen","to like"],["möchten","would like"]])+`<p class="warn">Careful: <b>ich muss nicht</b> means “I don’t have to”. For “must not”, say <b>ich darf nicht</b>.</p>`,
+  ex:[["Ich kann nicht schwimmen.","I can’t swim."],["Ich muss nach Hause gehen.","I have to go home."],["Hier darf man nicht rauchen.","You’re not allowed to smoke here."]],
+  pr:{label:"Practise modal verbs", type:"present", filter:v=>v.kind==="Mod"}},
+ {grp:"Special verbs", tag:"möchten", title:"möchten: the polite way to want",
+  html:`<p>Use <b>möchten</b> when you order or ask for something. It’s more polite than wollen, which can sound demanding.</p>`,
+  ex:[["Ich möchte einen Tee, bitte.","I’d like a tea, please."],["Möchten Sie etwas trinken?","Would you like something to drink?"]], pr:null},
+ {grp:"Special verbs", tag:"gern", title:"gern: saying you like doing something",
+  html:`<p>To say you like <i>doing</i> something, put <b>gern</b> after the verb. To say you like a <i>thing</i>, use <b>mögen</b>. For things you don’t like doing, say <b>nicht gern</b>.</p>`,
+  ex:[["Ich höre gern Musik.","I like listening to music."],["Ich singe nicht gern.","I don’t like singing."],["Ich mag Pizza.","I like pizza."]], pr:null},
+ {grp:"Special verbs", tag:"an- auf- aus- ein- vor-", title:"Separable verbs",
+  html:`<p>Some verbs start with a prefix that <b>splits off and goes to the end</b> of the sentence. The prefix is stressed: <b>AN</b>rufen.</p><p>Common separable prefixes: an-, auf-, aus-, ein-, mit-, vor-, zu-, zurück-, fern-.</p>`,
+  ex:[["Ich rufe meine Oma an.","I’m calling my grandma."],["Der Unterricht fängt um 12 Uhr an.","The lesson starts at 12."],["Ich lade dich zum Essen ein.","I’m inviting you to dinner."],["Du siehst immer gut aus.","You always look good."]],
+  pr:{label:"Practise separable verbs", type:"present", filter:v=>!!v.sep}},
+ {grp:"Special verbs", tag:"be- ver- er- ent- ge-", title:"Inseparable prefixes",
+  html:`<p>These prefixes <b>never</b> split off, and they are never stressed: be-, ver-, er-, ent-, ge-, emp-, zer-. They also get <b>no ge-</b> in the Perfekt: besucht, verstanden, erzählt.</p>`,
+  ex:[["Ich besuche meine Familie jeden Monat.","I visit my family every month."],["Hast du alles verstanden?","Did you understand everything?"]],
+  pr:{label:"Practise their Partizip II", type:"pp", filter:v=>INSEP.has(v.inf)}},
+ {grp:"Building sentences", tag:"verb = position 2", title:"Where the verb goes",
+  html:`<ul><li><b>Statements:</b> the verb is always the 2nd part. If something else comes first, the subject moves after the verb: Ich lerne heute Deutsch → Heute <b>lerne</b> ich Deutsch.</li><li><b>Yes/no questions:</b> the verb comes first: <b>Kommst</b> du?</li><li><b>W-questions:</b> question word first, verb second: Was <b>machst</b> du?</li><li>The <b>second part</b> of the verb (an infinitive after a modal, a Partizip II, or a separable prefix) goes to the very <b>end</b>.</li></ul>`,
+  ex:[["Heute lerne ich Deutsch.","Today I’m learning German."],["Kommst du morgen?","Are you coming tomorrow?"],["Ich habe ein Buch gekauft.","I bought a book."]], pr:null},
+ {grp:"Building sentences", tag:"du · ihr · Sie", title:"du, ihr or Sie?",
+  html:`<p><b>du</b>: one friend, family member or child. <b>ihr</b>: several of them. <b>Sie</b> (capital S): polite, for one or more people you don’t know well, like a teacher, a boss or a shop assistant. Sie uses the same verb form as sie (they): Sie arbeiten, Kommen Sie?</p>`,
+  ex:[["Wie heißt du?","What’s your name? (informal)"],["Wie heißen Sie?","What’s your name? (polite)"]], pr:null},
+ {grp:"Building sentences", tag:"nicht · kein", title:"nicht or kein?",
+  html:`<p>Use <b>kein</b> for nouns that would have <i>ein</i> or no article: Ich habe <b>keine</b> Zeit. Use <b>nicht</b> for everything else: verbs, adjectives, and nouns with der/die/das: Ich kann <b>nicht</b> schwimmen.</p>`,
+  ex:[["Ich habe keine Zeit.","I have no time."],["Ich teile deine Meinung nicht.","I don’t share your opinion."]], pr:null},
+ {grp:"Talking about the past", tag:"haben/sein + Partizip II", title:"The Perfekt",
+  html:`<p>When speaking, Germans usually talk about the past with the <b>Perfekt</b>: a form of <b>haben</b> or <b>sein</b> in position 2, and the <b>Partizip II</b> at the end.</p><p>Exception: for sein, haben and the modal verbs people normally use the simple past instead: ich war, ich hatte, ich konnte.</p>`,
+  ex:[["Ich habe Urlaub genommen.","I took a holiday."],["Ich bin nach Deutschland gereist.","I travelled to Germany."]],
+  pr:{label:"Practise Partizip II", type:"pp", filter:()=>true}},
+ {grp:"Talking about the past", tag:"haben or sein?", title:"haben or sein?",
+  html:`<p>Most verbs use <b>haben</b>. Use <b>sein</b> for:</p><ul><li><b>movement</b> from one place to another: gehen, kommen, fahren, fliegen, laufen, reisen</li><li>a <b>change of state</b>: werden, sterben, aufstehen</li><li>three special verbs: <b>sein, bleiben, passieren</b></li></ul><p class="warn">sitzen, stehen and liegen don’t involve moving anywhere, so they take haben.</p>`,
+  ex:[["Ich bin heute um 6 Uhr aufgestanden.","I got up at 6 today."],["Er ist vor zehn Jahren gestorben.","He died ten years ago."],["Hast du gut geschlafen?","Did you sleep well?"]],
+  pr:{label:"Practise haben or sein", type:"aux", filter:()=>true}},
+ {grp:"Talking about the past", tag:"ge-…-t · ge-…-en", title:"Making the Partizip II",
+  html:tbl([["type","pattern","examples"],["regular","ge- + stem + -t","machen → gemacht, arbeiten → gearbeitet"],["irregular","ge- + stem + -en (vowel often changes)","trinken → getrunken, essen → gegessen"],["mixed","ge- + changed stem + -t","bringen → gebracht, denken → gedacht"],["-ieren","no ge-, ends in -t","studieren → studiert"],["inseparable","no ge-","besuchen → besucht, verstehen → verstanden"],["separable","ge- in the middle","anrufen → angerufen"]])+`<p>Irregular participles can’t be worked out, so practise them until they sound right.</p>`,
+  ex:[], pr:{label:"Practise irregular ones", type:"pp", filter:v=>isIrregular(v)}}
+];
+function renderVLearn(){
+  let h=`<div class="golden"><h2>How to learn a verb</h2><p>Learn every verb as one line with three forms: <b>fahren – er fährt – ist gefahren</b>. That line tells you whether the vowel changes, whether it takes haben or sein, and what its Partizip II looks like. Tap any example to hear it.</p></div>`;
+  let g="";
+  VLESSONS.forEach((l,i)=>{
+    if(l.grp!==g){ g=l.grp; h+=`<h2 class="rgroup">${g}</h2>`; }
+    const n = l.pr ? verbPool(l.pr.type, l.pr.filter).length : 0;
+    h+=`<article class="rule r-verb"><div class="rhead"><span class="badge">${esc(l.tag)}</span></div><h3>${esc(l.title)}</h3><div class="lesson">${l.html}</div>
+      ${l.ex.length?`<div class="exs col">${l.ex.map(([d,e])=>ex2(d,e)).join("")}</div>`:""}
+      ${l.pr&&n?`<button class="btn ghost small" data-vp="${i}">${esc(l.pr.label)} (${n>20?"20 of "+n:n})</button>`:""}</article>`;
+  });
+  $("vlearn").innerHTML=h;
+}
+$("vlearn").addEventListener("click",e=>{
+  const b=e.target.closest("[data-vp]"); if(!b) return;
+  const pr=VLESSONS[+b.dataset.vp].pr;
+  startVerbQuiz(pr.type, pr.filter, "20", pr.persons);
+});
+
+/* ---------- verb list ---------- */
+function renderVList(){
+  const q=$("vsearch").value.trim().toLowerCase();
+  const vs=VERBS.filter(v=>!q || (v.inf+" "+v.en+" "+v.bn+" "+conj(v).join(" ")+" "+v.pp).toLowerCase().includes(q));
+  $("vlistBody").innerHTML = vs.length ? vs.map(v=>`<details class="vrow"><summary><span class="vinf">${esc(v.inf)}</span><span class="vmean">${esc(v.en)} · <span class="bn">${esc(v.bn)}</span></span><span class="vforms">er ${esc(conj(v)[2])} · ${v.pp?aux3(v)+" "+esc(v.pp):"no Perfekt"}</span></summary>
+    <div class="vbody"><p>${sayBtn(v.inf, "")} ${vTags(v)}</p>${conjHTML(v)}${v.pp?`<p>Perfekt: <strong>er ${aux3(v)} ${esc(v.pp)}</strong></p>`:""}<p>${sayBtn(v.exde, esc(v.exde))} <span class="tip">${esc(v.exen)}</span></p>${v.note?`<p class="tip">${esc(v.note)}</p>`:""}</div></details>`).join("")
+    : `<p class="hint">No verbs match “${esc(q)}”. Try a shorter search.</p>`;
+}
+$("vsearch").addEventListener("input",renderVList);
+
+/* ===================== navigation ===================== */
+const MODULES=[
+  {id:"nouns", name:"Nouns & words", desc:`${WORDS.length} words · der, die, das`, tabs:[["setup","Quiz"],["rules","Rules"],["list","Word list"]], home:"setup"},
+  {id:"verbs", name:"Verbs", desc:`${VERBS.length} verbs · forms & Perfekt`, tabs:[["vlearn","Learn"],["vsetup","Quiz"],["vlist","Verb list"]], home:"vlearn"}
+];
+const VIEWS=["setup","rules","list","vlearn","vsetup","vlist","quiz","results"];
+const VIEW_MOD={setup:"nouns",rules:"nouns",list:"nouns",vlearn:"verbs",vsetup:"verbs",vlist:"verbs"};
+let curMod="nouns"; const lastView={nouns:"setup",verbs:"vlearn"};
+function show(id){
+  curMod = (id==="quiz"||id==="results") ? quizMod : VIEW_MOD[id];
+  lastView[curMod]=id;
+  if(id==="rules") renderRules(); if(id==="list") renderList(); if(id==="vlearn") renderVLearn(); if(id==="vlist") renderVList();
+  if(id==="vsetup") renderVHint(); if(id==="setup") renderCats();
+  VIEWS.forEach(v=>$(v).hidden = v!==id);
+  $("mods").innerHTML = MODULES.map(m=>`<button class="mod" data-mod="${m.id}" aria-pressed="${m.id===curMod}"><strong>${m.name}</strong><span>${m.desc}</span></button>`).join("")+`<div class="mod soon" aria-hidden="true"><strong>More topics</strong><span>coming soon</span></div>`;
+  const m=MODULES.find(x=>x.id===curMod);
+  $("subnav").innerHTML = m.tabs.map(([v,l])=>`<button data-view="${v}" aria-pressed="${v===id || ((id==="quiz"||id==="results") && /setup/.test(v))}">${l}</button>`).join("");
+  try { if(location.hash!=="#"+curMod) location.hash = curMod; } catch(err) {}
+  window.scrollTo(0,0);
+}
+const inQuiz = m => (lastView[m]==="quiz"||lastView[m]==="results") && quizMod===m;
+$("mods").addEventListener("click",e=>{
+  const b=e.target.closest(".mod[data-mod]"); if(!b) return;
+  const m=b.dataset.mod, v=lastView[m];
+  show((v==="quiz"||v==="results") && quizMod!==m ? MODULES.find(x=>x.id===m).home : v);
+});
+$("subnav").addEventListener("click",e=>{
+  const b=e.target.closest("[data-view]"); if(!b) return;
+  const v=b.dataset.view;
+  show(/setup/.test(v) && inQuiz(curMod) && lastView[curMod]!==v ? lastView[curMod] : v);
+});
+window.addEventListener("hashchange",()=>{ const m=location.hash.slice(1); if(MODULES.some(x=>x.id===m) && m!==curMod) show(MODULES.find(x=>x.id===m).home); });
+syncChips();
+show(location.hash==="#verbs" ? "vlearn" : "setup");
+</script>
+</body>
+</html>
