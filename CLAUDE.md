@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-"Deutsch üben" is a German vocabulary trainer (nouns + articles, A1 words, verbs) with English and Bangla meanings. The entire app is one self-contained file, `german-nouns-quiz.html`: inline CSS, inline vanilla JS, and all word data. No build step, package manager, tests, or linter, and the folder is not a git repo.
+"Deutsch üben" is a German vocabulary trainer (nouns + articles, A1 words, verbs) with English and Bangla meanings. The entire app is one self-contained file, `german-nouns-quiz.html`: inline CSS, inline vanilla JS, and all word data. No build step, package manager, tests, or linter. It's hosted on GitHub Pages from the `main` branch (`index.html` redirects to the app).
 
 To run it, open the HTML file in a browser. The only external resource is Google Fonts (Bricolage Grotesque, plus Noto Sans Bengali for Bangla text). Pronunciation uses the browser's `speechSynthesis` API and prefers a `de-DE` voice.
 
@@ -19,7 +19,7 @@ To run it, open the HTML file in a browser. The only external resource is Google
    - **Voice**: `say(text, btn)`. Any element with a `data-t` attribute speaks that text on click.
    - **Shared quiz engine**: `runQuiz(questions, module)` → `renderQ` / `answer` / `next` / `results`. Each question is a plain object: `{key, prompt, word, gloss, layout, opts:[{v,html,cls}], ans, sayBefore, sayAfter, reveal(), feedback(ok), miss, redo()}`. Keys 1–4 pick answers (keydown handler). To add a new kind of quiz, write a builder that returns these objects; don't change the engine.
    - **Nouns module**: `renderCats` and `renderList`; `RULES`, the article-guessing rules, each with `lvl` (Always/Usually/Weak/None), `test(w)` and `extra` example words made with `ex()`; `nounQ` builds article and meaning questions, with distractors from the same topic first; `startNounQuiz`.
-   - **Verbs module**: conjugation is *generated*, not stored. `conjRaw` builds present-tense forms from stem rules and handles separable prefixes, `-ern`/`-eln`, e-insertion, and s-sounds. Exceptions come from the lookup tables `FORMS` (fully irregular), `CHG` (vowel-change labels), `INSEP` (inseparable prefixes) and `MOVE`/`CHANGE`/`ALWAYS_SEIN` (explain haben vs. sein). `vQ` builds verb questions; `VSETS` filters verbs by number range; `VLESSONS` is the content of the Learn tab.
+   - **Verbs module**: conjugation is *generated*, not stored. `conjRaw` builds present-tense forms from stem rules and handles separable prefixes, `-ern`/`-eln`, e-insertion, and s-sounds. Exceptions come from the lookup tables `FORMS` (fully irregular), `CHG` (vowel-change labels), `INSEP` (inseparable prefixes) and `MOVE`/`CHANGE`/`ALWAYS_SEIN` (explain haben vs. sein). `vQ` builds verb questions; `VSETS` filters verbs by number range; `VLESSONS` is the content of the Learn tab: each lesson's `grp` is an index into `VGROUPS` (the numbered A1 chapters), and `VCHECK` is the exam checklist at the end.
    - **Navigation**: `MODULES` defines the top-level modules and their sub-tabs. `show(viewId)` renders the view and toggles `hidden` on panels. The URL hash (`#nouns` / `#verbs`) picks the module. `lastView` remembers each module's tab, including a quiz in progress.
 
 ## Conventions and gotchas

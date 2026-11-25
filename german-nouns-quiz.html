@@ -151,6 +151,12 @@ details.vrow .vbody{padding:0 4px 16px}
 .golden{background:var(--ink);color:var(--bg);border-radius:18px;padding:20px 22px}
 .golden h2{color:var(--bg)}
 .golden p{margin:6px 0 0}
+.golden ul{margin:10px 0 0;padding-left:20px}
+.golden li{margin:4px 0}
+.toc{margin:20px 0 0}
+.toc .chip{font-size:14.5px;padding:6px 12px}
+.rgroup{scroll-margin-top:16px}
+.rgroup:focus,.golden:focus{outline:none}
 .rgroup{font-size:21px;font-weight:800;margin:32px 0 4px;letter-spacing:-0.01em}
 .rgroup-sub{color:var(--muted);margin:0 0 12px;font-size:15px}
 .rule{background:var(--surface);border:1px solid var(--line);border-left:6px solid var(--line);border-radius:16px;padding:18px 18px 16px;margin-bottom:12px}
@@ -1562,82 +1568,135 @@ $("vStartBtn").onclick=()=>startVerbQuiz(S.vmode, VSETS[S.vset], S.count);
 /* ---------- verb lessons ---------- */
 const ex2 = (de,en) => `<button class="ex" data-t="${esc(de)}">${canSpeak?ICON+" ":""}${esc(de)}<span class="en">${esc(en)}</span></button>`;
 const tbl = rows => `<div class="tbl-wrap"><table class="mini">${rows.map((r,i)=>`<tr>${r.map(c=>i===0?`<th>${c}</th>`:`<td>${c}</td>`).join("")}</tr>`).join("")}</table></div>`;
+const VGROUPS = [
+ ["Present tense: the basics","Almost every exam task uses the present tense. Make these endings automatic first."],
+ ["Irregular present tense","A few verbs break the pattern. They come up in almost every exam text."],
+ ["Modal verbs","You need these to ask for things, make plans and talk about rules."],
+ ["Separable and inseparable verbs","Very common in A1 texts about daily routines and appointments."],
+ ["Building sentences","Word order is checked in the writing and speaking parts."],
+ ["Commands: the Imperativ","For instructions, signs, requests and the “Bitte …” task in the speaking part."],
+ ["Talking about the past","For emails and short texts about what you did: last weekend, your holiday, yesterday."]
+];
 const VLESSONS = [
- {grp:"Present tense", tag:"-en", title:"The infinitive and the stem",
+ {grp:0, tag:"-en", title:"The infinitive and the stem",
   html:`<p>Almost every German verb ends in <b>-en</b> in the dictionary form: machen, wohnen, kaufen. A few end in just <b>-n</b>: feiern, erinnern. Take that ending off and you have the <b>stem</b>. Endings are added to the stem.</p>`+tbl([["infinitive","stem"],["machen","mach-"],["arbeiten","arbeit-"],["feiern","feier-"]]),
   ex:[], pr:{label:"Practise verb meanings", type:"meaning", filter:()=>true}},
- {grp:"Present tense", tag:"-e -st -t -en -t -en", title:"Present tense endings",
-  html:tbl([["person","ending","machen"],["ich","-e","ich mache"],["du","-st","du machst"],["er / sie / es","-t","er macht"],["wir","-en","wir machen"],["ihr","-t","ihr macht"],["sie / Sie","-en","sie machen"]])+`<p>Shortcut: the <b>wir</b>, <b>sie</b> and <b>Sie</b> forms always look like the infinitive (except sein: wir sind).</p>`,
-  ex:[["Ich wohne in Dhaka.","I live in Dhaka."],["Du lernst Deutsch.","You’re learning German."],["Wir spielen Fußball.","We play football."]],
+ {grp:0, tag:"-e -st -t -en -t -en", title:"Present tense endings",
+  html:tbl([["person","ending","machen"],["ich","-e","ich mache"],["du","-st","du machst"],["er / sie / es","-t","er macht"],["wir","-en","wir machen"],["ihr","-t","ihr macht"],["sie / Sie","-en","sie machen"]])+`<p>Shortcut: the <b>wir</b>, <b>sie</b> and <b>Sie</b> forms always look like the infinitive (except sein: wir sind).</p><p>German uses the present tense for <b>now</b> and for <b>the future</b>. Add a time word and you’re talking about later: Morgen <b>fahre</b> ich nach Berlin.</p>`,
+  ex:[["Ich wohne in Dhaka.","I live in Dhaka."],["Du lernst Deutsch.","You’re learning German."],["Wir spielen am Samstag Fußball.","We’re playing football on Saturday."]],
   pr:{label:"Practise regular verbs", type:"present", filter:v=>v.kind==="R"&&!v.sep}},
- {grp:"Present tense", tag:"extra -e-", title:"An extra -e- after t and d",
+ {grp:0, tag:"extra -e-", title:"An extra -e- after t and d",
   html:`<p>If the stem ends in <b>-t</b> or <b>-d</b> (or a hard-to-say consonant + n, like öffn-), add <b>-e-</b> before -st and -t so it can be pronounced. This affects du, er/sie/es and ihr.</p>`+tbl([["verb","du","er / sie / es","ihr"],["arbeiten","arbeitest","arbeitet","arbeitet"],["finden","findest","findet","findet"],["öffnen","öffnest","öffnet","öffnet"]]),
   ex:[["Sie arbeitet von Montag bis Freitag.","She works from Monday to Friday."],["Wie viel kostet das?","How much does that cost?"]],
   pr:{label:"Practise these verbs", type:"present", filter:v=>!FORMS[v.inf]&&!v.ch&&needsE(stemOf(v)), persons:[1,2,4]}},
- {grp:"Present tense", tag:"s-sound", title:"du with an s-sound: only add -t",
+ {grp:0, tag:"s-sound", title:"du with an s-sound: only add -t",
   html:`<p>If the stem ends in <b>s, ß, z</b> or <b>tz</b>, the du form only gets <b>-t</b>, not -st. So du and er/sie/es look the same.</p>`+tbl([["verb","du","er / sie / es"],["heißen","heißt","heißt"],["sitzen","sitzt","sitzt"],["tanzen","tanzt","tanzt"],["reisen","reist","reist"]]),
   ex:[["Wie heißt du?","What’s your name?"]],
   pr:{label:"Practise these verbs", type:"present", filter:v=>!FORMS[v.inf]&&sSound(stemOf(v)), persons:[1,2]}},
- {grp:"Present tense", tag:"a → ä · e → i · e → ie", title:"Stem-changing verbs",
-  html:`<p>Many irregular verbs change their vowel, but <b>only with du and er/sie/es</b>. Every other form is regular.</p>`+tbl([["change","verb","du","er / sie / es"],["a → ä","fahren","fährst","fährt"],["au → äu","laufen","läufst","läuft"],["e → i","sprechen","sprichst","spricht"],["e → ie","sehen","siehst","sieht"]])+`<p>Watch out for nehmen: du nimmst, er nimmt. And essen: du isst, er isst.</p>`,
-  ex:[["Er fährt mit dem Bus zur Arbeit.","He goes to work by bus."],["Anna spricht zu schnell.","Anna speaks too fast."],["Siehst du den Hund da?","Do you see the dog there?"]],
-  pr:{label:"Practise stem-changing verbs", type:"present", filter:v=>!!v.ch, persons:[1,2]}},
- {grp:"Special verbs", tag:"sein · haben · werden · wissen", title:"The must-know irregular verbs",
+ {grp:0, tag:"-ern · -eln", title:"Verbs ending in -ern and -eln",
+  html:`<p>These verbs only lose <b>-n</b>, so <b>wir</b> and <b>sie</b> end in <b>-n</b>, not -en. With -eln verbs the ich form usually drops an e: sammeln → ich <b>sammle</b>.</p>`+tbl([["person","feiern","wandern"],["ich","feiere","wandere"],["du","feierst","wanderst"],["er / sie / es","feiert","wandert"],["wir","feiern","wandern"],["ihr","feiert","wandert"],["sie / Sie","feiern","wandern"]]),
+  ex:[["Wir feiern am Samstag meinen Geburtstag.","We’re celebrating my birthday on Saturday."],["Ich wandere gern in den Bergen.","I like hiking in the mountains."]], pr:null},
+
+ {grp:1, tag:"sein · haben · werden · wissen", title:"The must-know irregular verbs",
   html:`<p>These four don’t follow the patterns, and you’ll use them every day. Learn them by heart.</p>`+tbl([["","sein","haben","werden","wissen"],...PRON.map((p,i)=>[p,...["sein","haben","werden","wissen"].map(x=>FORMS[x].split(" ")[i])])]),
   ex:[["Ich bin müde.","I’m tired."],["Ich habe keine Zeit.","I have no time."],["Das weiß ich leider nicht.","Unfortunately I don’t know that."]],
   pr:{label:"Practise these four", type:"present", filter:v=>["sein","haben","werden","wissen"].includes(v.inf)}},
- {grp:"Special verbs", tag:"können · müssen · dürfen …", title:"Modal verbs",
-  html:`<ul><li><b>ich</b> and <b>er/sie/es</b> are the same, with no ending: ich kann, er kann.</li><li>Most change their vowel in the singular: können → ich kann, müssen → ich muss, dürfen → ich darf, wollen → ich will.</li><li>The second verb goes to the <b>end</b>, in its infinitive form: Ich kann nicht <b>schwimmen</b>.</li></ul>`+tbl([["modal","meaning"],["können","can, to be able to"],["müssen","must, to have to"],["dürfen","may, to be allowed to"],["sollen","should"],["wollen","to want"],["mögen","to like"],["möchten","would like"]])+`<p class="warn">Careful: <b>ich muss nicht</b> means “I don’t have to”. For “must not”, say <b>ich darf nicht</b>.</p>`,
-  ex:[["Ich kann nicht schwimmen.","I can’t swim."],["Ich muss nach Hause gehen.","I have to go home."],["Hier darf man nicht rauchen.","You’re not allowed to smoke here."]],
+ {grp:1, tag:"a → ä · e → i · e → ie", title:"Stem-changing verbs",
+  html:`<p>Many irregular verbs change their vowel, but <b>only with du and er/sie/es</b>. Every other form is regular.</p>`+tbl([["change","verb","du","er / sie / es"],["a → ä","fahren","fährst","fährt"],["a → ä","schlafen","schläfst","schläft"],["au → äu","laufen","läufst","läuft"],["e → i","sprechen","sprichst","spricht"],["e → i","geben","gibst","gibt"],["e → ie","sehen","siehst","sieht"],["e → ie","lesen","liest","liest"]])+`<p>Watch out for nehmen: du nimmst, er nimmt. And essen: du isst, er isst.</p>`,
+  ex:[["Er fährt mit dem Bus zur Arbeit.","He goes to work by bus."],["Anna spricht zu schnell.","Anna speaks too fast."],["Siehst du den Hund da?","Do you see the dog there?"]],
+  pr:{label:"Practise stem-changing verbs", type:"present", filter:v=>!!v.ch, persons:[1,2]}},
+
+ {grp:2, tag:"können · müssen · dürfen …", title:"Modal verbs",
+  html:`<ul><li><b>ich</b> and <b>er/sie/es</b> are the same, with no ending: ich kann, er kann.</li><li>Most change their vowel in the singular: können → ich kann, müssen → ich muss, dürfen → ich darf, wollen → ich will.</li><li>The second verb goes to the <b>end</b>, in its infinitive form: Ich kann nicht <b>schwimmen</b>.</li></ul>`+tbl([["","können<br>can","müssen<br>must","dürfen<br>may","wollen<br>want"],...PRON.map((p,i)=>[p,...["können","müssen","dürfen","wollen"].map(x=>FORMS[x].split(" ")[i])])])+tbl([["","sollen<br>should","mögen<br>like","möchten<br>would like"],...PRON.map((p,i)=>[p,...["sollen","mögen","möchten"].map(x=>FORMS[x].split(" ")[i])])])+`<p class="warn">Careful: <b>ich muss nicht</b> means “I don’t have to”. For “must not”, say <b>ich darf nicht</b>.</p>`,
+  ex:[["Ich kann nicht schwimmen.","I can’t swim."],["Ich muss nach Hause gehen.","I have to go home."],["Hier darf man nicht rauchen.","You’re not allowed to smoke here."],["Kannst du mir helfen?","Can you help me?"]],
   pr:{label:"Practise modal verbs", type:"present", filter:v=>v.kind==="Mod"}},
- {grp:"Special verbs", tag:"möchten", title:"möchten: the polite way to want",
-  html:`<p>Use <b>möchten</b> when you order or ask for something. It’s more polite than wollen, which can sound demanding.</p>`,
-  ex:[["Ich möchte einen Tee, bitte.","I’d like a tea, please."],["Möchten Sie etwas trinken?","Would you like something to drink?"]], pr:null},
- {grp:"Special verbs", tag:"gern", title:"gern: saying you like doing something",
-  html:`<p>To say you like <i>doing</i> something, put <b>gern</b> after the verb. To say you like a <i>thing</i>, use <b>mögen</b>. For things you don’t like doing, say <b>nicht gern</b>.</p>`,
-  ex:[["Ich höre gern Musik.","I like listening to music."],["Ich singe nicht gern.","I don’t like singing."],["Ich mag Pizza.","I like pizza."]], pr:null},
- {grp:"Special verbs", tag:"an- auf- aus- ein- vor-", title:"Separable verbs",
-  html:`<p>Some verbs start with a prefix that <b>splits off and goes to the end</b> of the sentence. The prefix is stressed: <b>AN</b>rufen.</p><p>Common separable prefixes: an-, auf-, aus-, ein-, mit-, vor-, zu-, zurück-, fern-.</p>`,
+ {grp:2, tag:"möchten", title:"möchten: the polite way to want",
+  html:`<p>Use <b>möchten</b> when you order or ask for something. It’s more polite than wollen, which can sound demanding. It works with a noun or with a second verb at the end.</p>`,
+  ex:[["Ich möchte einen Tee, bitte.","I’d like a tea, please."],["Möchten Sie etwas trinken?","Would you like something to drink?"],["Ich möchte einen Termin machen.","I’d like to make an appointment."]], pr:null},
+ {grp:2, tag:"gern · lieber · am liebsten", title:"gern: saying you like doing something",
+  html:`<p>To say you like <i>doing</i> something, put <b>gern</b> after the verb. To say you like a <i>thing</i>, use <b>mögen</b>. For things you don’t like doing, say <b>nicht gern</b>.</p>`+tbl([["like","like more","like most"],["gern","lieber","am liebsten"]]),
+  ex:[["Ich höre gern Musik.","I like listening to music."],["Ich singe nicht gern.","I don’t like singing."],["Ich mag Pizza.","I like pizza."],["Ich trinke gern Tee, aber lieber Kaffee.","I like tea, but I prefer coffee."]], pr:null},
+
+ {grp:3, tag:"an- auf- aus- ein- vor-", title:"Separable verbs",
+  html:`<p>Some verbs start with a prefix that <b>splits off and goes to the end</b> of the sentence. The prefix is stressed: <b>AN</b>rufen.</p><p>Common separable prefixes: an-, auf-, aus-, ein-, mit-, vor-, zu-, zurück-, fern-.</p><p>With a modal verb, the verb stays in one piece at the end: Ich muss morgen früh <b>aufstehen</b>.</p>`,
   ex:[["Ich rufe meine Oma an.","I’m calling my grandma."],["Der Unterricht fängt um 12 Uhr an.","The lesson starts at 12."],["Ich lade dich zum Essen ein.","I’m inviting you to dinner."],["Du siehst immer gut aus.","You always look good."]],
   pr:{label:"Practise separable verbs", type:"present", filter:v=>!!v.sep}},
- {grp:"Special verbs", tag:"be- ver- er- ent- ge-", title:"Inseparable prefixes",
+ {grp:3, tag:"be- ver- er- ent- ge-", title:"Inseparable prefixes",
   html:`<p>These prefixes <b>never</b> split off, and they are never stressed: be-, ver-, er-, ent-, ge-, emp-, zer-. They also get <b>no ge-</b> in the Perfekt: besucht, verstanden, erzählt.</p>`,
   ex:[["Ich besuche meine Familie jeden Monat.","I visit my family every month."],["Hast du alles verstanden?","Did you understand everything?"]],
   pr:{label:"Practise their Partizip II", type:"pp", filter:v=>INSEP.has(v.inf)}},
- {grp:"Building sentences", tag:"verb = position 2", title:"Where the verb goes",
-  html:`<ul><li><b>Statements:</b> the verb is always the 2nd part. If something else comes first, the subject moves after the verb: Ich lerne heute Deutsch → Heute <b>lerne</b> ich Deutsch.</li><li><b>Yes/no questions:</b> the verb comes first: <b>Kommst</b> du?</li><li><b>W-questions:</b> question word first, verb second: Was <b>machst</b> du?</li><li>The <b>second part</b> of the verb (an infinitive after a modal, a Partizip II, or a separable prefix) goes to the very <b>end</b>.</li></ul>`,
-  ex:[["Heute lerne ich Deutsch.","Today I’m learning German."],["Kommst du morgen?","Are you coming tomorrow?"],["Ich habe ein Buch gekauft.","I bought a book."]], pr:null},
- {grp:"Building sentences", tag:"du · ihr · Sie", title:"du, ihr or Sie?",
-  html:`<p><b>du</b>: one friend, family member or child. <b>ihr</b>: several of them. <b>Sie</b> (capital S): polite, for one or more people you don’t know well, like a teacher, a boss or a shop assistant. Sie uses the same verb form as sie (they): Sie arbeiten, Kommen Sie?</p>`,
+
+ {grp:4, tag:"verb = position 2", title:"Where the verb goes",
+  html:`<ul><li><b>Statements:</b> the verb is always the 2nd part. If something else comes first, the subject moves after the verb: Ich lerne heute Deutsch → Heute <b>lerne</b> ich Deutsch.</li><li><b>Yes/no questions:</b> the verb comes first: <b>Kommst</b> du?</li><li><b>W-questions:</b> question word first, verb second: Was <b>machst</b> du?</li></ul>`,
+  ex:[["Heute lerne ich Deutsch.","Today I’m learning German."],["Am Wochenende spiele ich Fußball.","At the weekend I play football."]], pr:null},
+ {grp:4, tag:"position 2 … end", title:"The verb bracket",
+  html:`<p>When a sentence has two verb parts, the one with the ending goes in <b>position 2</b> and the other goes to the very <b>end</b>. Everything else sits in between.</p>`+tbl([["","1","2","middle","end"],["modal verb","Ich","kann","heute nicht","kommen."],["separable verb","Der Kurs","fängt","um 9 Uhr","an."],["Perfekt","Ich","habe","gestern Pizza","gegessen."]]),
+  ex:[["Ich muss heute lange arbeiten.","I have to work late today."],["Wir stehen jeden Tag um 7 Uhr auf.","We get up at 7 every day."],["Ich habe am Samstag meine Freunde getroffen.","I met my friends on Saturday."]], pr:null},
+ {grp:4, tag:"wer · was · wo · wann …", title:"Asking questions",
+  html:tbl([["question word","meaning"],["wer","who"],["was","what"],["wo","where"],["woher","where from"],["wohin","where to"],["wann","when"],["wie","how"],["wie viel / wie viele","how much / how many"],["warum","why"],["welcher / welche / welches","which"]])+`<p>Yes/no questions start with the verb. If the question has <b>nicht</b> or <b>kein</b> in it, answer “yes” with <b>doch</b>: Kommst du nicht? – <b>Doch</b>, ich komme.</p>`,
+  ex:[["Woher kommst du?","Where are you from?"],["Wo wohnen Sie?","Where do you live?"],["Wann beginnt der Kurs?","When does the course start?"],["Sprechen Sie Englisch?","Do you speak English?"]], pr:null},
+ {grp:4, tag:"und · aber · oder · denn", title:"Joining two sentences",
+  html:`<p><b>und</b> (and), <b>aber</b> (but), <b>oder</b> (or) and <b>denn</b> (because) join two sentences <b>without changing the word order</b>. They don’t count as a position, so the verb is still 2nd in the next part.</p><p class="warn">For A1, use <b>denn</b> for “because”. weil is also correct, but it sends the verb to the end, which is an A2 topic.</p>`,
+  ex:[["Ich lerne Deutsch, denn ich möchte in Berlin arbeiten.","I’m learning German because I want to work in Berlin."],["Ich trinke Kaffee, aber mein Mann trinkt Tee.","I drink coffee, but my husband drinks tea."],["Kommst du heute oder kommst du morgen?","Are you coming today or tomorrow?"]], pr:null},
+ {grp:4, tag:"du · ihr · Sie", title:"du, ihr or Sie?",
+  html:`<p><b>du</b>: one friend, family member or child. <b>ihr</b>: several of them. <b>Sie</b> (capital S): polite, for one or more people you don’t know well, like a teacher, a boss or a shop assistant. Sie uses the same verb form as sie (they): Sie arbeiten, Kommen Sie?</p><p>In the exam, write to a friend with <b>du</b> (Liebe Anna, …) and to an office or a teacher with <b>Sie</b> (Sehr geehrte Damen und Herren, …).</p>`,
   ex:[["Wie heißt du?","What’s your name? (informal)"],["Wie heißen Sie?","What’s your name? (polite)"]], pr:null},
- {grp:"Building sentences", tag:"nicht · kein", title:"nicht or kein?",
+ {grp:4, tag:"nicht · kein", title:"nicht or kein?",
   html:`<p>Use <b>kein</b> for nouns that would have <i>ein</i> or no article: Ich habe <b>keine</b> Zeit. Use <b>nicht</b> for everything else: verbs, adjectives, and nouns with der/die/das: Ich kann <b>nicht</b> schwimmen.</p>`,
-  ex:[["Ich habe keine Zeit.","I have no time."],["Ich teile deine Meinung nicht.","I don’t share your opinion."]], pr:null},
- {grp:"Talking about the past", tag:"haben/sein + Partizip II", title:"The Perfekt",
-  html:`<p>When speaking, Germans usually talk about the past with the <b>Perfekt</b>: a form of <b>haben</b> or <b>sein</b> in position 2, and the <b>Partizip II</b> at the end.</p><p>Exception: for sein, haben and the modal verbs people normally use the simple past instead: ich war, ich hatte, ich konnte.</p>`,
+  ex:[["Ich habe keine Zeit.","I have no time."],["Das ist nicht mein Buch.","That’s not my book."],["Ich teile deine Meinung nicht.","I don’t share your opinion."]], pr:null},
+ {grp:4, tag:"Akkusativ · Dativ", title:"Verbs and their objects",
+  html:`<p>Most verbs take an <b>Akkusativ</b> object: the thing you have, need, buy or see. Only masculine words change: der → <b>den</b>, ein → <b>einen</b>, kein → <b>keinen</b>. <b>es gibt</b> (there is) always takes the Akkusativ too.</p><p>A few common verbs take the <b>Dativ</b> instead: <b>helfen, danken, gefallen, gehören, schmecken, antworten, gratulieren</b>. Learn them with a pronoun: Das gefällt <b>mir</b>.</p>`+tbl([["subject","Akkusativ","Dativ"],["ich","mich","mir"],["du","dich","dir"],["er","ihn","ihm"],["sie","sie","ihr"],["es","es","ihm"],["wir","uns","uns"],["ihr","euch","euch"],["sie / Sie","sie / Sie","ihnen / Ihnen"]]),
+  ex:[["Ich brauche einen Stift.","I need a pen."],["Es gibt hier keinen Supermarkt.","There’s no supermarket here."],["Das Essen schmeckt mir.","I like the food."],["Wie geht es Ihnen?","How are you? (polite)"],["Gehört das Handy dir?","Is this phone yours?"]], pr:null},
+
+ {grp:5, tag:"Komm! · Kommt! · Kommen Sie!", title:"The Imperativ",
+  html:`<ul><li><b>Sie:</b> verb + Sie: Kommen Sie bitte!</li><li><b>ihr:</b> the ihr form without ihr: Kommt!</li><li><b>du:</b> the stem, without du and without <span style="white-space:nowrap">-st</span>: Komm! Mach!</li><li>e → i / ie verbs <b>keep</b> the change in the du form: Nimm! Gib! Lies! Sprich! Iss!</li><li>a → ä verbs <b>don’t</b>: Fahr! Schlaf! Lauf!</li><li>Stems ending in -t, -d or hard-to-say -n add -e: Arbeite! Warte! Öffne!</li><li>Separable prefixes go to the end: Ruf mich an! Steh auf!</li></ul>`+tbl([["verb","du","ihr","Sie"],["kommen","Komm!","Kommt!","Kommen Sie!"],["warten","Warte!","Wartet!","Warten Sie!"],["nehmen","Nimm!","Nehmt!","Nehmen Sie!"],["fahren","Fahr!","Fahrt!","Fahren Sie!"],["anrufen","Ruf … an!","Ruft … an!","Rufen Sie … an!"],["sein","Sei!","Seid!","Seien Sie!"]])+`<p>Add <b>bitte</b> to make it polite: Ruf mich bitte an! Öffnen Sie bitte das Fenster.</p>`,
+  ex:[["Komm bitte morgen pünktlich!","Please come on time tomorrow!"],["Nehmen Sie bitte Platz.","Please take a seat."],["Sei leise, das Baby schläft!","Be quiet, the baby is sleeping!"],["Ruft mich bitte an!","Please call me! (to several friends)"]], pr:null},
+
+ {grp:6, tag:"war · hatte", title:"war and hatte",
+  html:`<p>For <b>sein</b> and <b>haben</b>, use the simple past (Präteritum), not the Perfekt. Say “ich war”, not “ich bin gewesen”. Like the modals, ich and er/sie/es have no ending.</p>`+tbl([["","sein","haben"],["ich","war","hatte"],["du","warst","hattest"],["er / sie / es","war","hatte"],["wir","waren","hatten"],["ihr","wart","hattet"],["sie / Sie","waren","hatten"]]),
+  ex:[["Ich war gestern krank.","I was ill yesterday."],["Wo warst du am Wochenende?","Where were you at the weekend?"],["Wir hatten keine Zeit.","We had no time."]], pr:null},
+ {grp:6, tag:"haben/sein + Partizip II", title:"The Perfekt",
+  html:`<p>For every other verb, talk about the past with the <b>Perfekt</b>: a form of <b>haben</b> or <b>sein</b> in position 2, and the <b>Partizip II</b> at the end.</p>`+tbl([["","2","middle","end"],["Ich","habe","gestern Fußball","gespielt."],["Wir","sind","nach Hamburg","gefahren."]]),
   ex:[["Ich habe Urlaub genommen.","I took a holiday."],["Ich bin nach Deutschland gereist.","I travelled to Germany."]],
   pr:{label:"Practise Partizip II", type:"pp", filter:()=>true}},
- {grp:"Talking about the past", tag:"haben or sein?", title:"haben or sein?",
+ {grp:6, tag:"haben or sein?", title:"haben or sein?",
   html:`<p>Most verbs use <b>haben</b>. Use <b>sein</b> for:</p><ul><li><b>movement</b> from one place to another: gehen, kommen, fahren, fliegen, laufen, reisen</li><li>a <b>change of state</b>: werden, sterben, aufstehen</li><li>three special verbs: <b>sein, bleiben, passieren</b></li></ul><p class="warn">sitzen, stehen and liegen don’t involve moving anywhere, so they take haben.</p>`,
   ex:[["Ich bin heute um 6 Uhr aufgestanden.","I got up at 6 today."],["Er ist vor zehn Jahren gestorben.","He died ten years ago."],["Hast du gut geschlafen?","Did you sleep well?"]],
   pr:{label:"Practise haben or sein", type:"aux", filter:()=>true}},
- {grp:"Talking about the past", tag:"ge-…-t · ge-…-en", title:"Making the Partizip II",
+ {grp:6, tag:"ge-…-t · ge-…-en", title:"Making the Partizip II",
   html:tbl([["type","pattern","examples"],["regular","ge- + stem + -t","machen → gemacht, arbeiten → gearbeitet"],["irregular","ge- + stem + -en (vowel often changes)","trinken → getrunken, essen → gegessen"],["mixed","ge- + changed stem + -t","bringen → gebracht, denken → gedacht"],["-ieren","no ge-, ends in -t","studieren → studiert"],["inseparable","no ge-","besuchen → besucht, verstehen → verstanden"],["separable","ge- in the middle","anrufen → angerufen"]])+`<p>Irregular participles can’t be worked out, so practise them until they sound right.</p>`,
   ex:[], pr:{label:"Practise irregular ones", type:"pp", filter:v=>isIrregular(v)}}
 ];
+const VCHECK = [
+  "Present endings: -e, -st, -t, -en, -t, -en.",
+  "sein, haben, werden and wissen by heart.",
+  "Vowel change only with du and er/sie/es: du fährst, er liest.",
+  "Modals: ich kann = er kann, second verb at the end.",
+  "Separable prefix at the end: Ich rufe dich an.",
+  "Verb in position 2, and first in yes/no questions.",
+  "und, aber, oder, denn don’t change the word order.",
+  "du for friends, Sie for strangers and offices.",
+  "Imperativ: Komm! Kommt! Kommen Sie!",
+  "Past: ich war, ich hatte, and Perfekt for everything else.",
+  "sein in the Perfekt for movement and change: ich bin gefahren."
+];
 function renderVLearn(){
   let h=`<div class="golden"><h2>How to learn a verb</h2><p>Learn every verb as one line with three forms: <b>fahren – er fährt – ist gefahren</b>. That line tells you whether the vowel changes, whether it takes haben or sein, and what its Partizip II looks like. Tap any example to hear it.</p></div>`;
-  let g="";
+  h+=`<nav class="toc" aria-label="Verb chapters"><p class="rgroup-sub">Work through the chapters in order. Together they cover the verb grammar for the A1 exam.</p><div class="chips">${VGROUPS.map(([t],i)=>`<button class="chip" data-jump="${i}">${i+1}. ${esc(t)}</button>`).join("")}<button class="chip" data-jump="check">Exam checklist</button></div></nav>`;
+  let g=-1;
   VLESSONS.forEach((l,i)=>{
-    if(l.grp!==g){ g=l.grp; h+=`<h2 class="rgroup">${g}</h2>`; }
+    if(l.grp!==g){ g=l.grp; h+=`<h2 class="rgroup" id="vg-${g}" tabindex="-1">${g+1}. ${esc(VGROUPS[g][0])}</h2><p class="rgroup-sub">${esc(VGROUPS[g][1])}</p>`; }
     const n = l.pr ? verbPool(l.pr.type, l.pr.filter).length : 0;
     h+=`<article class="rule r-verb"><div class="rhead"><span class="badge">${esc(l.tag)}</span></div><h3>${esc(l.title)}</h3><div class="lesson">${l.html}</div>
       ${l.ex.length?`<div class="exs col">${l.ex.map(([d,e])=>ex2(d,e)).join("")}</div>`:""}
       ${l.pr&&n?`<button class="btn ghost small" data-vp="${i}">${esc(l.pr.label)} (${n>20?"20 of "+n:n})</button>`:""}</article>`;
   });
+  h+=`<div class="golden" id="vg-check" tabindex="-1" style="margin-top:32px"><h2>Exam checklist</h2><p>Before the exam, check that you can do each of these without thinking:</p><ul>${VCHECK.map(c=>`<li>${esc(c)}</li>`).join("")}</ul></div>`;
   $("vlearn").innerHTML=h;
 }
 $("vlearn").addEventListener("click",e=>{
+  const j=e.target.closest("[data-jump]");
+  if(j){ const t=$("vg-"+j.dataset.jump); if(t){ t.scrollIntoView({behavior:"smooth",block:"start"}); t.focus({preventScroll:true}); } return; }
   const b=e.target.closest("[data-vp]"); if(!b) return;
   const pr=VLESSONS[+b.dataset.vp].pr;
   startVerbQuiz(pr.type, pr.filter, "20", pr.persons);
