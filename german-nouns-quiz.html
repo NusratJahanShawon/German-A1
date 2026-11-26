@@ -201,6 +201,8 @@ details.vrow .vbody{padding:0 4px 16px}
 details.notes{margin-top:6px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 18px}
 details.notes summary{cursor:pointer;font-weight:700}
 details.notes .lesson{margin-top:10px}
+.nextcard{margin:18px 0 4px;padding:16px 18px;border-radius:16px;background:var(--bg);border:1px solid var(--line)}
+.nextcard h3{margin:4px 0 2px;font-size:18px}
 .warn{background:var(--die-soft);border-radius:10px;padding:8px 12px;margin:0 0 12px;font-size:15px}
 footer{color:var(--muted);font-size:13px;margin-top:34px}
 [hidden]{display:none !important}
@@ -379,6 +381,7 @@ footer{color:var(--muted);font-size:13px;margin-top:34px}
       <button class="btn" id="retryMissBtn">Practise my mistakes</button>
       <button class="btn ghost" id="newBtn">Start a new quiz</button>
     </div>
+    <div id="rNext"></div>
     <ul class="miss" id="rMiss"></ul>
   </section>
 
@@ -1362,7 +1365,28 @@ function results(){
   $("retryMissBtn").hidden = !uniq.length;
   $("rMiss").innerHTML = uniq.map(q=>q.miss).join("");
   $("retryMissBtn").onclick=()=>runQuiz(shuffle(uniq.map(q=>q.redo())), quizMod);
+  renderNextLesson();
 }
+// After practising a lesson, offer the next Teacher lesson. quizFrom = {cid, i} is set by the practise buttons.
+let quizFrom = null;
+function renderNextLesson(){
+  const el=$("rNext"); el.innerHTML="";
+  if(!quizFrom || typeof course!=="function") return;
+  const C=course(quizFrom.cid), i=quizFrom.i, nx=C.items[i+1];
+  const name = it => esc(quizFrom.cid==="verbs" ? `${it.tag}: ${it.title}` : it.title);
+  el.innerHTML = `<div class="nextcard">${nx
+    ? `<p class="hint" style="margin:0">Up next in the Teacher</p><h3>${C.unit} ${i+2}: ${name(nx)}</h3><p class="hint" style="margin:0 0 12px">${esc(C.groups[nx.grp])}</p>
+       <div class="row"><button class="btn" data-nx="${i+1}">Start next ${C.unit.toLowerCase()}</button><button class="btn ghost" data-nx="${i}">Back to this ${C.unit.toLowerCase()}</button></div>`
+    : `<h3>You’ve finished every ${C.unit.toLowerCase()} in this course. Well done!</h3><div class="row"><button class="btn ghost" data-nx="${i}">Back to the last ${C.unit.toLowerCase()}</button></div>`}</div>`;
+}
+$("rNext").addEventListener("click",e=>{
+  const b=e.target.closest("[data-nx]"); if(!b || !quizFrom) return;
+  const cid=quizFrom.cid, i=+b.dataset.nx, play = i!==quizFrom.i;
+  if(cid!=="nouns") tVmode=cid;
+  show(cid==="nouns" ? "nteach" : "vteach");
+  goLesson(i);
+  if(play) playStep();
+});
 $("newBtn").onclick=()=>show(quizMod==="verbs"?"vsetup":"setup");
 
 /* ===================== NOUNS & WORDS module ===================== */
@@ -1483,6 +1507,7 @@ $("rules").addEventListener("click",e=>{
   const p=e.target.closest("[data-pr]"); if(!p) return;
   const pool=rulePool(RULES[+p.dataset.pr]);
   startNounQuiz(pool, "article", pool.length>20 ? "20" : "all");
+  quizFrom = {cid:"nouns", i:+p.dataset.pr+1};
 });
 
 function nounQ(w, type){
@@ -1501,6 +1526,7 @@ function nounQ(w, type){
     opts:shuffle([w,...d]).map(x=>({v:x.id,html:meanHTML(x)})), ans:w.id, sayBefore:full(w), sayAfter:null};
 }
 function startNounQuiz(words, type, count){
+  quizFrom = null;
   if(type==="article") words = words.filter(w=>w.a);
   if(!words.length){ show("setup"); $("catHint").textContent="These topics have no nouns, so there are no articles to practise. Pick a noun topic or switch to Meanings."; return; }
   runQuiz(take(shuffle(words), count).map(w=>nounQ(w,type)), "nouns");
@@ -1656,6 +1682,7 @@ function renderVHint(){
   $("vStartBtn").disabled = !n;
 }
 function startVerbQuiz(type, filter, count, persons){
+  quizFrom = null;
   const pool=verbPool(type, filter);
   runQuiz(take(shuffle(pool), count).map(v=>vQ(v,type,persons)), "verbs");
 }
@@ -1796,6 +1823,7 @@ $("vlearn").addEventListener("click",e=>{
   const b=e.target.closest("[data-vp]"); if(!b) return;
   const pr=VLESSONS[+b.dataset.vp].pr;
   startVerbQuiz(pr.type, pr.filter, "20", pr.persons);
+  quizFrom = {cid:"vrules", i:+b.dataset.vp};
 });
 
 /* ---------- verb teacher (spoken lectures) ----------
@@ -2146,7 +2174,7 @@ function teachClick(e){
   else if(b.id==="treplay"){ T.end=false; playStep(); }
   else if(b.dataset.tc==="nextlesson"){ goLesson(T.i+1); playStep(); }
   else if(b.dataset.tc==="again"){ goLesson(T.i); playStep(); }
-  else if(b.dataset.tc==="practise"){ stopLecture(); course(T.cid).items[T.i].pr.run(); }
+  else if(b.dataset.tc==="practise"){ stopLecture(); course(T.cid).items[T.i].pr.run(); quizFrom = {cid:T.cid, i:T.i}; }
 }
 ["vteach","nteach"].forEach(id=>{
   $(id).addEventListener("click", teachClick);
