@@ -175,6 +175,22 @@ details.vrow .vbody{padding:0 4px 16px}
 .ex{font:inherit;font-size:15px;border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:10px;padding:5px 10px;cursor:pointer;text-align:left}
 .ex:hover{border-color:var(--ink)}
 .ex .en{color:var(--muted);font-size:14px;display:block}
+.tlabel{display:block;font-weight:600;margin:22px 0 6px}
+.lsel{width:100%;font:inherit;font-size:16px;padding:12px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink)}
+.board{margin:14px 0 4px;min-height:180px}
+.seg{margin:0 0 10px;font-size:17px;line-height:1.5;color:var(--ink);transition:opacity .25s,background .25s;border-radius:10px;padding:4px 10px;margin-left:-10px;margin-right:-10px}
+.rule .board .seg{color:var(--ink);font-size:17px;margin-bottom:8px}
+.seg.big,.rule .board .seg.big{font-size:21px;font-weight:600}
+.seg.todo{opacity:.28}
+.seg.now{background:var(--verb-soft)}
+.seg.turn,.rule .board .seg.turn{color:var(--muted);font-style:italic}
+.de{font:inherit;font-weight:700;color:var(--verb);background:none;border:none;padding:0;cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}
+.lprog{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin:10px 0 6px}
+.lprog span{display:block;height:100%;background:var(--verb);transition:width .3s}
+.lctrl{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:14px 0 12px}
+details.notes{margin-top:6px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 18px}
+details.notes summary{cursor:pointer;font-weight:700}
+details.notes .lesson{margin-top:10px}
 .warn{background:var(--die-soft);border-radius:10px;padding:8px 12px;margin:0 0 12px;font-size:15px}
 footer{color:var(--muted);font-size:13px;margin-top:34px}
 [hidden]{display:none !important}
@@ -251,6 +267,31 @@ footer{color:var(--muted);font-size:13px;margin-top:34px}
 
   <!-- ===== VERBS: LEARN ===== -->
   <section id="vlearn" hidden></section>
+
+  <!-- ===== VERBS: TEACHER ===== -->
+  <section id="vteach" hidden>
+    <div class="golden"><h2>Your German teacher</h2><p>Pick a lesson and press Start. I’ll explain it out loud, step by step, as if you’re starting from zero. When you see “Your turn”, say the German out loud. Tap any orange word to hear it again.</p></div>
+    <label class="tlabel" for="tsel">Lesson</label>
+    <select id="tsel" class="lsel"></select>
+    <p class="hint" id="tdone"></p>
+    <article class="rule r-verb">
+      <div id="tlesson"></div>
+      <div id="tboard" class="board" aria-live="polite"></div>
+      <div id="tprog"></div>
+      <div class="lctrl">
+        <button class="btn" id="tplay">Start lesson</button>
+        <button class="btn ghost small" id="tback">Back</button>
+        <button class="btn ghost small" id="tnext">Next step</button>
+        <button class="btn ghost small" id="treplay">Replay step</button>
+      </div>
+      <div class="chips" data-key="rate">
+        <button class="chip" data-v="normal">Normal speed</button>
+        <button class="chip" data-v="slow">Slow</button>
+      </div>
+      <p class="hint voiceHint"></p>
+    </article>
+    <details class="notes" open><summary>Notes for this lesson</summary><div id="tnotes"></div></details>
+  </section>
 
   <!-- ===== VERBS: SETUP ===== -->
   <section id="vsetup" class="panel" hidden>
@@ -1171,13 +1212,14 @@ document.addEventListener("click",e=>{
 /* ---------- voice ---------- */
 const ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/></svg>`;
 const canSpeak = "speechSynthesis" in window;
-let deVoice = null;
+let deVoice = null, enVoice = null;
 function loadVoices(){
   let msg = "";
   if(!canSpeak) msg = "This browser can’t read words aloud. Try Chrome, Edge or Safari.";
   else {
     const vs = speechSynthesis.getVoices();
     deVoice = vs.find(v=>/^de[-_]DE/i.test(v.lang)) || vs.find(v=>/^de/i.test(v.lang)) || null;
+    enVoice = vs.find(v=>/^en[-_](GB|US)/i.test(v.lang) && v.localService) || vs.find(v=>/^en[-_](GB|US)/i.test(v.lang)) || vs.find(v=>/^en/i.test(v.lang)) || null;
     msg = deVoice ? `German voice: ${deVoice.name}` : vs.length ? "No German voice found on this device, so words may sound wrong. Add German in your device’s text-to-speech settings." : "";
   }
   document.querySelectorAll(".voiceHint").forEach(el=>el.textContent=msg);
@@ -1702,6 +1744,209 @@ $("vlearn").addEventListener("click",e=>{
   startVerbQuiz(pr.type, pr.filter, "20", pr.persons);
 });
 
+/* ---------- verb teacher (spoken lectures) ----------
+   LECT[i] is the spoken script for VLESSONS[i], as a list of steps. Each step is a list of lines.
+   {…} marks German (spoken by the German voice, shown as a tappable word). "~" is a pause for the learner to repeat. */
+const LECT = [
+ [["Hello, and welcome! I’m your German teacher. We start from zero, so don’t worry if you know nothing yet.","Our first topic is the verb. A verb is a doing word, like eat, live or make."],
+  ["In German, every verb has a dictionary form. It’s called the infinitive.","Listen to three of them:","{machen}","{wohnen}","{kaufen}","They mean: to make, to live, and to buy."],
+  ["Did you notice? They all end the same way: e, n.","Almost every German verb ends in e n.","Say them with me:","{machen}","~","{wohnen}","~"],
+  ["Now the important trick. Take away the e n at the end. What’s left is called the stem.","{machen} without e n is {mach}.","{wohnen} without e n is {wohn}."],
+  ["A few verbs end only in n. For example {feiern}, to celebrate. Here you take away only the n, so the stem is {feier}.","Remember: find the stem first. In the next lesson we add endings to it."]],
+ [["Now we put endings on the stem. The ending tells you who is doing the action.","Let’s use {machen}. The stem is {mach}."],
+  ["For I, German says {ich}. Add an e: {ich mache}.","Repeat after me:","{ich mache}","~"],
+  ["When you talk to one friend, you is {du}. Add s, t: {du machst}.","{du machst}","~"],
+  ["For he, she and it, German says {er}, {sie} and {es}. Add just a t:","{er macht}","{sie macht}","~"],
+  ["For we, German says {wir}. The form looks just like the infinitive: {wir machen}.","For you, talking to several friends, German says {ihr}. Add a t: {ihr macht}.","For they, and for polite you, it’s {sie} and {Sie}. Again like the infinitive: {sie machen}."],
+  ["Let’s say all six together, slowly.","{ich mache}","{du machst}","{er macht}","{wir machen}","{ihr macht}","{sie machen}","Now you say all six.","~","~"],
+  ["Quick test. How do you say “you learn” to one friend? The verb is {lernen}.","~","It’s {du lernst}. Well done if you got it!"],
+  ["One more useful thing: German uses this same present tense for the future. Just add a time word.","{Morgen fahre ich nach Berlin.}","Tomorrow I’m going to Berlin."]],
+ [["Some stems end in t or d, like {arbeiten}, to work. The stem is {arbeit}.","If we just add s, t, we get a sound that’s very hard to say."],
+  ["So German adds a little e first, with du, er and ihr.","{du arbeitest}","{er arbeitet}","{ihr arbeitet}","Repeat:","~"],
+  ["The same happens with {finden}, to find: {du findest}, {er findet}.","And with {öffnen}, to open, because f n is hard to say: {er öffnet}."],
+  ["You’ll hear this one in every shop:","{Wie viel kostet das?}","How much does that cost? Say it with me.","~"]],
+ [["Now a small rule about the s sound.","Think of {heißen}, to be called. The stem {heiß} already ends in an s sound."],
+  ["So for du, we don’t add s, t. We only add t.","{du heißt}","And for er it’s the same: {er heißt}."],
+  ["This is how you ask someone’s name:","{Wie heißt du?}","Repeat:","~","And the answer:","{Ich heiße Anna.}","~"],
+  ["The same happens with {sitzen}, {tanzen} and {reisen}:","{du sitzt}","{du tanzt}","{du reist}"]],
+ [["Remember {feiern}? It ends only in n.","For wir and sie, just use the infinitive: {wir feiern}, {sie feiern}."],
+  ["The other forms use the normal endings on the stem {feier}:","{ich feiere}","{du feierst}","{er feiert}","{ihr feiert}"],
+  ["Verbs ending in e l n, like {sammeln}, to collect, drop one e in the ich form: {ich sammle}.","Here’s a full sentence:","{Wir feiern am Samstag meinen Geburtstag.}","We’re celebrating my birthday on Saturday."]],
+ [["Welcome to the special verbs! These four break the rules, so we simply learn them by heart.","The most important verb of all is {sein}, to be."],
+  ["{ich bin}","{du bist}","{er ist}","{wir sind}","{ihr seid}","{sie sind}","Now you, slowly:","~","~"],
+  ["Next, {haben}, to have. It’s nearly regular. Only du and er are short.","{ich habe}","{du hast}","{er hat}","{wir haben}","{ihr habt}","{sie haben}"],
+  ["{werden} means to become. Listen to du and er: {du wirst}, {er wird}.","And {wissen}, to know a fact: {ich weiß}, {du weißt}, {er weiß}. Notice that ich and er are the same."],
+  ["Let’s use them.","{Ich bin müde.}","I’m tired.","{Ich habe keine Zeit.}","I have no time.","{Das weiß ich nicht.}","I don’t know that. Repeat each one.","~"]],
+ [["Some verbs change their vowel. But here’s the good news: only with du and with er, sie, es. Everything else is normal."],
+  ["{fahren} means to drive, or to travel by car, bus or train. Listen: {ich fahre}, but {du fährst}, {er fährt}.","The a becomes {ä}, an a with two dots.","And {wir fahren} is normal again."],
+  ["Another type: e becomes i.","{sprechen}, to speak: {du sprichst}, {er spricht}.","{geben}, to give: {du gibst}, {er gibt}."],
+  ["And e can become i e.","{sehen}, to see: {du siehst}, {er sieht}.","{lesen}, to read: {du liest}, {er liest}."],
+  ["Two tricky ones.","{nehmen}, to take: {du nimmst}, {er nimmt}.","{essen}, to eat: {du isst}, {er isst}."],
+  ["Quick test: how do you say “he speaks”? The verb is {sprechen}.","~","{er spricht}. Great!","Tip: always learn these verbs together with the er form, like this: {fahren, er fährt}."]],
+ [["Modal verbs help another verb. They say things like can, must or want.","{können}, can.","{müssen}, must.","{dürfen}, may.","{wollen}, want.","{sollen}, should.","{mögen}, like."],
+  ["Two rules make them easy. Rule one: ich and er are the same, and they have no ending.","{ich kann}, {er kann}.","{ich muss}, {er muss}."],
+  ["Rule two: the second verb goes to the very end, in its infinitive form.","{Ich kann nicht schwimmen.}","I can’t swim. See? {schwimmen} goes to the end."],
+  ["Let’s hear all of {können}:","{ich kann}","{du kannst}","{er kann}","{wir können}","{ihr könnt}","{sie können}","Your turn:","~"],
+  ["Careful, here’s a trap. {Ich muss nicht} means I don’t have to.","To say must not, use {darf nicht}.","{Hier darf man nicht rauchen.}","You’re not allowed to smoke here."],
+  ["A very useful question:","{Kannst du mir helfen?}","Can you help me? Repeat:","~"]],
+ [["Here’s the most polite word for shops and cafés: {möchten}. It means would like.","{Ich möchte einen Tee, bitte.}","I’d like a tea, please. Repeat:","~"],
+  ["A waiter might ask you:","{Möchten Sie etwas trinken?}","Would you like something to drink?","{wollen} also means want, but it can sound rude. So when you ask for something, use {möchte}."],
+  ["You can also put another verb at the end:","{Ich möchte einen Termin machen.}","I’d like to make an appointment."]],
+ [["How do you say you like doing something? Just put {gern} after the verb.","{Ich höre gern Musik.}","I like listening to music.","~"],
+  ["If you don’t like it, say {nicht gern}.","{Ich singe nicht gern.}","For things, not actions, use {mögen}:","{Ich mag Pizza.}"],
+  ["And to compare: {gern}, {lieber}, {am liebsten}. That’s like, prefer, and like most of all.","{Ich trinke gern Tee, aber lieber Kaffee.}"]],
+ [["Some verbs come in two pieces, like a Lego brick. For example {anrufen}, to phone someone.","The front piece, {an}, is called a prefix."],
+  ["In a normal sentence, the prefix breaks off and jumps to the very end.","{Ich rufe meine Oma an.}","I’m calling my grandma. {rufe} is in second place, and {an} is at the end."],
+  ["Another one: {aufstehen}, to get up.","{Ich stehe um sieben Uhr auf.}","~","And {anfangen}, to start:","{Der Kurs fängt um neun Uhr an.}"],
+  ["One exception: with a modal verb, the verb stays in one piece at the end.","{Ich muss morgen früh aufstehen.}"],
+  ["Prefixes that split include {an}, {auf}, {aus}, {ein}, {mit}, {vor}, {zu} and {zurück}. They are stressed when you say the verb: {anrufen}, {aufstehen}. Listen to the strong start."]],
+ [["Some prefixes never split, like {be}, {ver} and {er}. And they are never stressed.","{besuchen}, to visit:","{Ich besuche meine Familie.}","Nothing jumps to the end."],
+  ["{verstehen}, to understand:","{Ich verstehe das nicht.}","I don’t understand that. A very useful sentence in the exam! Repeat:","~"],
+  ["Remember these for later: in the past tense, these verbs get no extra g e. We’ll see that in chapter seven."]],
+ [["Now the golden rule of German sentences: the verb is always in second place.","{Ich lerne heute Deutsch.}","Ich is first, and the verb is second."],
+  ["What if we start with heute, today? The verb still wants second place, so ich moves behind it.","{Heute lerne ich Deutsch.}","~"],
+  ["One more:","{Am Wochenende spiele ich Fußball.}","At the weekend I play football."],
+  ["In yes or no questions, the verb jumps to the front:","{Kommst du?}","In W questions, the question word is first and the verb is second:","{Was machst du?}"]],
+ [["When there are two verb parts, German builds a bracket, like two hands holding the sentence.","The verb with the ending sits in second place. The other part goes to the very end."],
+  ["With a modal verb:","{Ich kann heute nicht kommen.}","With a split verb:","{Der Kurs fängt um neun Uhr an.}","With the past:","{Ich habe gestern Pizza gegessen.}"],
+  ["Everything else goes in the middle. Try it: say “I have to work today”. You need {müssen} and {arbeiten}.","~","{Ich muss heute arbeiten.}"]],
+ [["Let’s learn the W words for questions. Repeat each one.","{wer}, who.","{was}, what.","{wo}, where.","{woher}, where from.","{wohin}, where to."],
+  ["{wann}, when.","{wie}, how.","{wie viel}, how much.","{warum}, why.","{welche}, which."],
+  ["Now some full questions. Repeat after me.","{Woher kommst du?}","~","{Wo wohnen Sie?}","~","{Wann beginnt der Kurs?}","~"],
+  ["Yes or no questions start with the verb:","{Sprechen Sie Englisch?}","Answer with {ja} or {nein}."],
+  ["One special word: {doch}. Use it to say yes to a negative question.","{Kommst du nicht?}","{Doch, ich komme.}"]],
+ [["To join two sentences, use {und}, and. {aber}, but. {oder}, or. And {denn}, because.","These four words don’t change the word order at all. Think of them as glue that doesn’t take a place."],
+  ["{Ich trinke Kaffee, aber mein Mann trinkt Tee.}","{Ich lerne Deutsch, denn ich möchte in Berlin arbeiten.}"],
+  ["For A1, use {denn} for because. It’s the easiest. {weil} also means because, but it changes the word order, so save it for A2."]],
+ [["German has three ways to say you.","{du}, for one friend, a family member or a child.","{ihr}, for several of them.","{Sie}, with a capital S, for polite you: a teacher, a doctor or a stranger."],
+  ["{Wie heißt du?}","{Wie heißen Sie?}","It’s the same question with a different level of politeness. {Sie} uses the same verb form as they."],
+  ["In the writing exam, write to a friend with {du}, and start with {Liebe Anna}.","Write to an office with {Sie}, and start with {Sehr geehrte Damen und Herren}."]],
+ [["German has two words for not. {kein} goes with nouns that would have {ein}, or no article at all.","{Ich habe ein Auto.} becomes {Ich habe kein Auto.}","{Ich habe Zeit.} becomes {Ich habe keine Zeit.}"],
+  ["For everything else, use {nicht}: with verbs, adjectives, and nouns with der, die or das.","{Ich kann nicht schwimmen.}","{Das ist nicht mein Buch.}"]],
+ [["Most verbs have an object: the thing you have, need or buy. This is called the {Akkusativ}.","Good news: only masculine words change. {der} becomes {den}, and {ein} becomes {einen}."],
+  ["{Ich brauche einen Stift.}","I need a pen.","{Es gibt hier keinen Supermarkt.}","There’s no supermarket here."],
+  ["A few verbs are special. They take the {Dativ} instead: {helfen}, {danken}, {gefallen}, {gehören} and {schmecken}.","Learn them with the little words {mir}, to me, and {dir}, to you."],
+  ["{Das Essen schmeckt mir.}","I like the food.","{Kannst du mir helfen?}","{Wie geht es Ihnen?}","How are you? That’s the polite form. Repeat these.","~"],
+  ["The little pronouns: {mich} and {mir} for me. {dich} and {dir} for you. {ihn} and {ihm} for him. The full table is in the notes below."]],
+ [["Now commands: how to tell someone what to do. This is called the {Imperativ}.","The polite form first: the verb, then {Sie}.","{Kommen Sie bitte!}","~"],
+  ["For several friends, use the ihr form without ihr:","{Kommt!}","For one friend, use just the stem:","{Komm!}"],
+  ["If the vowel changes from e to i, the change stays:","{Nimm!}","{Gib!}","{Lies!}","{Sprich!}","But a to {ä} doesn’t stay:","{Fahr!}","{Schlaf!}"],
+  ["Split verbs split here too:","{Ruf mich an!}","{Steh auf!}","And {sein} is special:","{Sei leise!}","Be quiet.","{Seien Sie pünktlich!}"],
+  ["Always add {bitte} to be friendly:","{Nehmen Sie bitte Platz.}","Please take a seat.","~"]],
+ [["Welcome to the past! Let’s start with the two easiest past forms.","{ich war} means I was. {ich hatte} means I had."],
+  ["{ich war}","{du warst}","{er war}","{wir waren}","{ihr wart}","{sie waren}","~"],
+  ["{ich hatte}","{du hattest}","{er hatte}","{wir hatten}","{ihr hattet}","{sie hatten}","~"],
+  ["{Ich war gestern krank.}","I was ill yesterday.","{Wo warst du am Wochenende?}","Where were you at the weekend?","{Wir hatten keine Zeit.}","We had no time."]],
+ [["For almost every other verb, Germans talk about the past with the {Perfekt}.","It has two parts: {haben} or {sein} in second place, and a special form at the end, called the {Partizip zwei}."],
+  ["{Ich habe gestern Fußball gespielt.}","I played football yesterday.","{habe} is in second place, and {gespielt} is at the end."],
+  ["{Wir sind nach Hamburg gefahren.}","We went to Hamburg. Repeat:","~"]],
+ [["How do you choose between {haben} and {sein}? Most verbs use {haben}. Easy."],
+  ["Use {sein} when you move from one place to another: {gehen}, {kommen}, {fahren}, {fliegen}.","{Ich bin nach Hause gegangen.}","I went home."],
+  ["Also use {sein} when something changes, like {aufstehen} or {werden}.","{Ich bin um sechs Uhr aufgestanden.}","And for three special verbs: {sein}, {bleiben} and {passieren}.","{Was ist passiert?}","What happened?"],
+  ["A trap: {sitzen}, {stehen} and {liegen} don’t move anywhere, so they use {haben}.","{Ich habe lange gesessen.}"]],
+ [["Last lesson! Let’s build the {Partizip zwei}.","Regular verbs: g e, plus the stem, plus t.","{machen}, {gemacht}.","{kaufen}, {gekauft}."],
+  ["If the stem ends in t or d, add e t:","{arbeiten}, {gearbeitet}."],
+  ["Irregular verbs end in e n, and the vowel often changes:","{trinken}, {getrunken}.","{essen}, {gegessen}.","These you learn one by one."],
+  ["Verbs ending in i e r e n get no g e:","{studieren}, {studiert}.","Verbs starting with be, ver or er get no g e either:","{besuchen}, {besucht}.","{verstehen}, {verstanden}."],
+  ["Split verbs put g e in the middle:","{anrufen}, {angerufen}.","{aufstehen}, {aufgestanden}."],
+  ["Congratulations! You’ve finished all the verb lessons for A1.","Now go to the quiz and practise.","{Viel Erfolg!}","That means: good luck!"]]
+];
+const LT = {i:0, s:0, k:-1, run:0, playing:false, end:false};
+let LDONE = new Set();
+try { LDONE = new Set(JSON.parse(localStorage.getItem("vteachDone")||"[]")); } catch(err) {}
+const saveDone = () => { try { localStorage.setItem("vteachDone", JSON.stringify([...LDONE])); } catch(err) {} };
+const wait = ms => new Promise(r=>setTimeout(r,ms));
+function lParts(line){
+  if(line==="~") return [{pause: S.rate==="slow" ? 4500 : 3200}];
+  return line.split(/\{([^}]*)\}/).map((t,j)=>({lang: j%2 ? "de" : "en", text: t.trim()})).filter(p=>/[A-Za-zÄÖÜäöüß0-9]/.test(p.text));
+}
+function lSpeak(p){
+  return new Promise(res=>{
+    if(p.pause){ setTimeout(res, p.pause); return; }
+    const de = p.lang==="de", v = de ? deVoice : enVoice, u = new SpeechSynthesisUtterance(de ? p.text : p.text.replace(/’/g,"'"));
+    u.lang = v ? v.lang : (de ? "de-DE" : "en-GB"); if(v) u.voice = v;
+    u.rate = de ? (S.rate==="slow" ? 0.65 : 0.9) : (S.rate==="slow" ? 0.85 : 1);
+    let done = false; const fin = () => { if(!done){ done = true; res(); } };
+    u.onend = u.onerror = fin; LT.u = u;
+    setTimeout(fin, 4000 + p.text.length * 160);   // safety net for browsers that never fire onend
+    speechSynthesis.speak(u);
+  });
+}
+function stopLecture(){ LT.run++; LT.playing=false; LT.k=-1; if(canSpeak) speechSynthesis.cancel(); }
+async function playStep(){
+  if(!canSpeak) return;
+  const run = ++LT.run; speechSynthesis.cancel(); await wait(60);
+  LT.playing = true; LT.end = false; renderTeachBoard();
+  const lines = LECT[LT.i][LT.s];
+  for(let k=0; k<lines.length; k++){
+    if(run!==LT.run) return;
+    LT.k = k; markLines();
+    for(const p of lParts(lines[k])){ await lSpeak(p); if(run!==LT.run) return; }
+    await wait(220);
+  }
+  if(run!==LT.run) return;
+  if(LT.s < LECT[LT.i].length-1){ await wait(500); if(run!==LT.run) return; LT.s++; LT.k=-1; playStep(); }
+  else { LT.playing=false; LT.k=-1; LT.end=true; LDONE.add(LT.i); saveDone(); renderTeach(); }
+}
+const lLine = (line, k) => line==="~" ? `<p class="seg turn" data-k="${k}">Your turn: say it out loud.</p>`
+  : `<p class="seg${/^\{[^}]*\}$/.test(line)?" big":""}" data-k="${k}">${esc(line).replace(/\{([^}]*)\}/g,(m,d)=>`<button class="de" data-t="${d}">${d}</button>`)}</p>`;
+function markLines(){
+  document.querySelectorAll("#tboard .seg").forEach(el=>{
+    const k=+el.dataset.k;
+    el.classList.toggle("now", LT.playing && k===LT.k);
+    el.classList.toggle("todo", LT.playing && k>LT.k);
+  });
+  const now=document.querySelector("#tboard .seg.now");
+  if(now){ const r=now.getBoundingClientRect(); if(r.bottom>innerHeight-20 || r.top<0) now.scrollIntoView({behavior:"smooth",block:"center"}); }
+}
+function renderTeachBoard(){
+  const l=VLESSONS[LT.i], steps=LECT[LT.i], last=LT.i===VLESSONS.length-1;
+  const n = l.pr ? verbPool(l.pr.type, l.pr.filter).length : 0;
+  let board;
+  if(LT.end){
+    board = `<p class="seg big">Lesson finished. Well done!</p><p class="seg">You can hear it again, practise it, or go on to the next lesson.</p>
+      <div class="lctrl">${last?"":`<button class="btn small" data-tc="nextlesson">Next lesson</button>`}${l.pr&&n?`<button class="btn ghost small" data-tc="practise">${esc(l.pr.label)}</button>`:""}<button class="btn ghost small" data-tc="again">Hear it again</button></div>`;
+  } else board = steps[LT.s].map(lLine).join("");
+  $("tlesson").innerHTML = `<div class="rhead"><span class="badge">${esc(l.tag)}</span></div><h3>${esc(l.title)}</h3>
+    <p class="hint" style="margin:0">Lesson ${LT.i+1} of ${VLESSONS.length} · Chapter ${l.grp+1}: ${esc(VGROUPS[l.grp][0])}</p>`;
+  $("tboard").innerHTML = board;
+  const pct = LT.end ? 100 : Math.round(LT.s/steps.length*100);
+  $("tprog").innerHTML = `<div class="lprog"><span style="width:${pct}%"></span></div><p class="hint" style="margin:0">${LT.end?"Finished":`Step ${LT.s+1} of ${steps.length}`}</p>`;
+  $("tplay").textContent = LT.playing ? "Pause" : (LT.s===0 && !LT.end ? "Start lesson" : "Play");
+  $("tplay").disabled = !canSpeak;
+  $("tplay").hidden = $("treplay").hidden = LT.end;
+  $("treplay").disabled = !canSpeak;
+  $("tback").disabled = LT.s===0 && !LT.end;
+  $("tnext").disabled = LT.end && last;
+  markLines();
+}
+function renderTeach(){
+  $("tsel").innerHTML = VGROUPS.map((g,gi)=>`<optgroup label="${gi+1}. ${esc(g[0])}">${VLESSONS.map((l,i)=>l.grp!==gi?"":`<option value="${i}"${i===LT.i?" selected":""}>${LDONE.has(i)?"✓ ":""}${i+1}. ${esc(l.title)}</option>`).join("")}</optgroup>`).join("");
+  const l=VLESSONS[LT.i];
+  $("tnotes").innerHTML = `<div class="lesson">${l.html}</div>${l.ex.length?`<div class="exs col">${l.ex.map(([d,e])=>ex2(d,e)).join("")}</div>`:""}`;
+  $("tdone").textContent = LDONE.size ? `${LDONE.size} of ${VLESSONS.length} lessons finished.` : "";
+  renderTeachBoard();
+}
+function goLesson(i){ stopLecture(); LT.i=i; LT.s=0; LT.end=false; renderTeach(); }
+function goStep(d){
+  const was = LT.playing; stopLecture();
+  if(LT.end){ LT.end=false; if(d>0){ if(LT.i<VLESSONS.length-1) goLesson(LT.i+1); return; } }
+  else { const n=LECT[LT.i].length; LT.s+=d; if(LT.s<0) LT.s=0; if(LT.s>=n){ LT.s=n-1; LT.end=true; LDONE.add(LT.i); saveDone(); renderTeach(); return; } }
+  renderTeachBoard(); if(was) playStep();
+}
+$("vteach").addEventListener("click",e=>{
+  if(e.target.closest("[data-t]")){ if(LT.playing){ stopLecture(); renderTeachBoard(); } return; }   // the global handler then speaks the word
+  const b=e.target.closest("button"); if(!b) return;
+  if(b.id==="tplay"){ if(LT.playing){ stopLecture(); renderTeachBoard(); } else playStep(); }
+  else if(b.id==="tback") goStep(-1);
+  else if(b.id==="tnext") goStep(1);
+  else if(b.id==="treplay"){ LT.end=false; playStep(); }
+  else if(b.dataset.tc==="nextlesson"){ goLesson(LT.i+1); playStep(); }
+  else if(b.dataset.tc==="again"){ goLesson(LT.i); playStep(); }
+  else if(b.dataset.tc==="practise"){ const pr=VLESSONS[LT.i].pr; startVerbQuiz(pr.type, pr.filter, "20", pr.persons); }
+});
+$("tsel").addEventListener("change",e=>goLesson(+e.target.value));
+
 /* ---------- verb list ---------- */
 function renderVList(){
   const q=$("vsearch").value.trim().toLowerCase();
@@ -1715,15 +1960,16 @@ $("vsearch").addEventListener("input",renderVList);
 /* ===================== navigation ===================== */
 const MODULES=[
   {id:"nouns", name:"Nouns & words", desc:`${WORDS.length} words · der, die, das`, tabs:[["setup","Quiz"],["rules","Rules"],["list","Word list"]], home:"setup"},
-  {id:"verbs", name:"Verbs", desc:`${VERBS.length} verbs · forms & Perfekt`, tabs:[["vlearn","Learn"],["vsetup","Quiz"],["vlist","Verb list"]], home:"vlearn"}
+  {id:"verbs", name:"Verbs", desc:`${VERBS.length} verbs · forms & Perfekt`, tabs:[["vlearn","Learn"],["vteach","Teacher"],["vsetup","Quiz"],["vlist","Verb list"]], home:"vlearn"}
 ];
-const VIEWS=["setup","rules","list","vlearn","vsetup","vlist","quiz","results"];
-const VIEW_MOD={setup:"nouns",rules:"nouns",list:"nouns",vlearn:"verbs",vsetup:"verbs",vlist:"verbs"};
+const VIEWS=["setup","rules","list","vlearn","vteach","vsetup","vlist","quiz","results"];
+const VIEW_MOD={setup:"nouns",rules:"nouns",list:"nouns",vlearn:"verbs",vteach:"verbs",vsetup:"verbs",vlist:"verbs"};
 let curMod="nouns"; const lastView={nouns:"setup",verbs:"vlearn"};
 function show(id){
   curMod = (id==="quiz"||id==="results") ? quizMod : VIEW_MOD[id];
   lastView[curMod]=id;
   if(id==="rules") renderRules(); if(id==="list") renderList(); if(id==="vlearn") renderVLearn(); if(id==="vlist") renderVList();
+  if(id!=="vteach") stopLecture(); else renderTeach();
   if(id==="vsetup") renderVHint(); if(id==="setup") renderCats();
   VIEWS.forEach(v=>$(v).hidden = v!==id);
   $("mods").innerHTML = MODULES.map(m=>`<button class="mod" data-mod="${m.id}" aria-pressed="${m.id===curMod}"><strong>${m.name}</strong><span>${m.desc}</span></button>`).join("")+`<div class="mod soon" aria-hidden="true"><strong>More topics</strong><span>coming soon</span></div>`;
