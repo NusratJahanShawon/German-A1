@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 "Deutsch üben" is a German vocabulary trainer (nouns + articles, A1 words, verbs) with English and Bangla meanings. The entire app is one self-contained file, `german-nouns-quiz.html`: inline CSS, inline vanilla JS, and all word data. No build step, package manager, tests, or linter. It's hosted on GitHub Pages from the `main` branch (`index.html` redirects to the app).
 
-To run it, open the HTML file in a browser. The only external resource is Google Fonts (Bricolage Grotesque, plus Noto Sans Bengali for Bangla text). Pronunciation uses the browser's `speechSynthesis` API and prefers a `de-DE` voice.
+To run it, open the HTML file in a browser. The only external resource is Google Fonts (Bricolage Grotesque, plus Noto Sans Bengali for Bangla text). Pronunciation uses the browser's `speechSynthesis` API. `voiceScore` ranks the device's voices so natural ones ("Natural", "Online", "Premium", "Enhanced", Google) win over robotic or novelty voices; the user can override the German and English voice in the chooser inside every `.voiceHint`, and the choice is saved in `localStorage` (`voice:de`, `voice:en`).
 
 ## File layout (top to bottom)
 

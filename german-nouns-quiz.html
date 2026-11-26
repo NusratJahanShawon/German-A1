@@ -80,6 +80,14 @@ h2{font-size:22px;margin:0 0 4px;font-weight:800;letter-spacing:-0.01em}
 .btn:disabled{opacity:.4;cursor:not-allowed}
 .btn.small{font-size:15px;padding:9px 14px}
 .hint{color:var(--muted);font-size:14px;margin-top:10px}
+.voiceHint{margin-top:10px}
+.vbox summary{cursor:pointer;color:var(--muted);font-size:14px}
+.vbox[open] summary{margin-bottom:8px}
+.vrow{display:flex;gap:8px;align-items:flex-end;margin:8px 0}
+.vpick{flex:1;min-width:0;font-size:14px;color:var(--muted)}
+.vpick span{display:block;margin-bottom:4px}
+.vpick .lsel{padding:9px 10px;font-size:14.5px;box-sizing:border-box}
+.vrow .btn{flex-shrink:0}
 /* quiz */
 .topbar{display:flex;justify-content:space-between;align-items:center;font-size:15px;color:var(--muted);margin-bottom:10px}
 .bar{height:6px;background:var(--line);border-radius:6px;overflow:hidden;margin-bottom:18px}
@@ -251,7 +259,7 @@ footer{color:var(--muted);font-size:13px;margin-top:34px}
         <button class="chip" data-v="normal">Normal speed</button>
         <button class="chip" data-v="slow">Slow</button>
       </div>
-      <p class="hint voiceHint"></p>
+      <div class="voiceHint"></div>
     </div>
     <div class="row"><button class="btn" id="startBtn">Start quiz</button></div>
     <p class="hint">Tip: use the number keys to answer and Enter for the next question.</p>
@@ -331,7 +339,7 @@ footer{color:var(--muted);font-size:13px;margin-top:34px}
         <button class="chip" data-v="normal">Normal speed</button>
         <button class="chip" data-v="slow">Slow</button>
       </div>
-      <p class="hint voiceHint"></p>
+      <div class="voiceHint"></div>
     </div>
     <div class="row"><button class="btn" id="vStartBtn">Start quiz</button></div>
     <p class="hint">Tip: use the number keys to answer and Enter for the next question.</p>
@@ -1193,18 +1201,61 @@ document.addEventListener("click",e=>{
 /* ---------- voice ---------- */
 const ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/></svg>`;
 const canSpeak = "speechSynthesis" in window;
-let deVoice = null, enVoice = null;
-function loadVoices(){
-  let msg = "";
-  if(!canSpeak) msg = "This browser can’t read words aloud. Try Chrome, Edge or Safari.";
-  else {
-    const vs = speechSynthesis.getVoices();
-    deVoice = vs.find(v=>/^de[-_]DE/i.test(v.lang)) || vs.find(v=>/^de/i.test(v.lang)) || null;
-    enVoice = vs.find(v=>/^en[-_](GB|US)/i.test(v.lang) && v.localService) || vs.find(v=>/^en[-_](GB|US)/i.test(v.lang)) || vs.find(v=>/^en/i.test(v.lang)) || null;
-    msg = deVoice ? `German voice: ${deVoice.name}` : vs.length ? "No German voice found on this device, so words may sound wrong. Add German in your device’s text-to-speech settings." : "";
-  }
-  document.querySelectorAll(".voiceHint").forEach(el=>el.textContent=msg);
+let deVoice = null, enVoice = null, allVoices = [];
+// Score voices so the most natural one wins: cloud/neural voices first, robotic and novelty voices last.
+function voiceScore(v, lang){
+  const n=v.name; let sc=0;
+  if(/natural|neural|online|wavenet|studio/i.test(n)) sc+=60;
+  if(/premium|enhanced|siri/i.test(n)) sc+=50;
+  if(/google/i.test(n)) sc+=40;
+  if(/microsoft/i.test(n) && !/online|natural/i.test(n)) sc-=10;
+  if(/compact|espeak|eloquence|mbrola|robot/i.test(n)) sc-=60;
+  if(/^(Albert|Bad News|Bahh|Bells|Boing|Bubbles|Cellos|Good News|Jester|Organ|Superstar|Trinoids|Whisper|Wobble|Zarvox|Fred|Junior|Ralph|Kathy)\b/i.test(n)) sc-=100;
+  if(new RegExp("^"+lang+"[-_]"+(lang==="de"?"DE":"(GB|US)"),"i").test(v.lang)) sc+=15;
+  if(v.default) sc+=2;
+  return sc;
 }
+const voicesFor = lang => allVoices.filter(v=>new RegExp("^"+lang,"i").test(v.lang)).sort((a,b)=>voiceScore(b,lang)-voiceScore(a,lang));
+function pickVoice(lang){
+  const vs=voicesFor(lang); let saved=null;
+  try { saved=localStorage.getItem("voice:"+lang); } catch(err) {}
+  return vs.find(v=>v.name===saved) || vs[0] || null;
+}
+function voiceSelect(lang, cur){
+  const vs=voicesFor(lang);
+  if(!vs.length) return `<p class="hint">No ${lang==="de"?"German":"English"} voice on this device.</p>`;
+  return `<label class="vpick"><span>${lang==="de"?"German voice":"English voice (Teacher)"}</span>
+    <select class="lsel vsel" data-lang="${lang}">${vs.map(v=>`<option value="${esc(v.name)}"${cur&&v.name===cur.name?" selected":""}>${esc(v.name)} (${esc(v.lang)})</option>`).join("")}</select></label>
+    <button class="btn ghost small" data-vtest="${lang}">Test</button>`;
+}
+function loadVoices(){
+  let html = "";
+  if(!canSpeak) html = `<p class="hint">This browser can’t read words aloud. Try Chrome, Edge or Safari.</p>`;
+  else {
+    allVoices = speechSynthesis.getVoices();
+    deVoice = pickVoice("de"); enVoice = pickVoice("en");
+    if(allVoices.length){
+      html = `<details class="vbox"><summary>Voice: ${deVoice?esc(deVoice.name):"no German voice found"} · change</summary>
+        <div class="vrow">${voiceSelect("de",deVoice)}</div><div class="vrow">${voiceSelect("en",enVoice)}</div>
+        <p class="hint">Voices come from your device. The most natural ones are usually called “Natural”, “Online”, “Premium”, “Enhanced” or “Google”. On iPhone you can download better voices in Settings › Accessibility › Spoken Content › Voices. In Microsoft Edge, the “Online (Natural)” voices sound the most human.</p></details>`;
+      if(!deVoice) html += `<p class="hint">No German voice found on this device, so words may sound wrong. Add German in your device’s text-to-speech settings.</p>`;
+    }
+  }
+  document.querySelectorAll(".voiceHint").forEach(el=>{ const open=el.querySelector("details[open]"); el.innerHTML=html; if(open) el.querySelector("details")?.setAttribute("open",""); });
+}
+document.addEventListener("change",e=>{
+  const sel=e.target.closest(".vsel"); if(!sel) return;
+  try { localStorage.setItem("voice:"+sel.dataset.lang, sel.value); } catch(err) {}
+  loadVoices();
+});
+document.addEventListener("click",e=>{
+  const b=e.target.closest("[data-vtest]"); if(!b) return;
+  const de=b.dataset.vtest==="de", v=de?deVoice:enVoice; if(!v) return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(de ? "Hallo! Ich heiße Anna. Wie heißt du?" : "Hello! I'm your German teacher. Let's start.");
+  u.voice=v; u.lang=v.lang; u.rate=de?(S.rate==="slow"?0.75:1):(S.rate==="slow"?0.85:1.05);
+  speechSynthesis.speak(u);
+});
 if(canSpeak){ loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; } else loadVoices();
 const spoken = w => w.w.replace(/\s*\((.*)\)/, ", $1");
 const full = w => (w.a ? w.a+" " : "") + spoken(w);
@@ -1214,7 +1265,7 @@ function say(text, btn){
   const u = new SpeechSynthesisUtterance(text);
   u.lang = deVoice ? deVoice.lang : "de-DE";
   if(deVoice) u.voice = deVoice;
-  u.rate = S.rate==="slow" ? 0.6 : 0.95;
+  u.rate = S.rate==="slow" ? 0.7 : 1;
   if(btn){ btn.classList.add("playing"); u.onend = u.onerror = ()=>btn.classList.remove("playing"); }
   speechSynthesis.speak(u);
 }
@@ -1951,16 +2002,16 @@ function doneSet(cid){
 function markDone(){ const d=doneSet(T.cid); d.add(T.i); try { localStorage.setItem("teachDone:"+T.cid, JSON.stringify([...d])); } catch(err) {} }
 const wait = ms => new Promise(r=>setTimeout(r,ms));
 function lParts(line){
-  if(line==="~") return [{pause: S.rate==="slow" ? 4500 : 3200}];
+  if(line==="~") return [{pause: S.rate==="slow" ? 3800 : 2600}];
   if(line.startsWith("bn:")) return [];
-  return line.split(/\{([^}]*)\}/).map((t,j)=>({lang: j%2 ? "de" : "en", text: j%2 ? t.trim() : t.replace(/^[\s,.;:]+/,"").trim()})).filter(p=>/[A-Za-zÄÖÜäöüß0-9]/.test(p.text));
+  return line.split(/\{([^}]*)\}/).map((t,j)=>({lang: j%2 ? "de" : "en", text: j%2 ? t.trim() : t.replace(/^[\s,.;:]+/,"").trim()})).flatMap(p=>p.lang==="en" ? (p.text.match(/[^.!?]+[.!?]*/g)||[]).map(t=>({lang:"en",text:t.trim()})) : [p]).filter(p=>/[A-Za-zÄÖÜäöüß0-9]/.test(p.text));
 }
 function lSpeak(p){
   return new Promise(res=>{
     if(p.pause){ setTimeout(res, p.pause); return; }
     const de = p.lang==="de", v = de ? deVoice : enVoice, u = new SpeechSynthesisUtterance(de ? p.text : p.text.replace(/’/g,"'"));
     u.lang = v ? v.lang : (de ? "de-DE" : "en-GB"); if(v) u.voice = v;
-    u.rate = de ? (S.rate==="slow" ? 0.65 : 0.9) : (S.rate==="slow" ? 0.85 : 1);
+    u.rate = de ? (S.rate==="slow" ? 0.75 : 1) : (S.rate==="slow" ? 0.85 : 1.05);
     let done = false; const fin = () => { if(!done){ done = true; res(); } };
     u.onend = u.onerror = fin; T.u = u;
     setTimeout(fin, 4000 + p.text.length * 160);   // safety net for browsers that never fire onend
@@ -1977,10 +2028,10 @@ async function playStep(){
     if(run!==T.run) return;
     T.k = k; markLines();
     for(const p of lParts(lines[k])){ await lSpeak(p); if(run!==T.run) return; }
-    await wait(220);
+    await wait(90);
   }
   if(run!==T.run) return;
-  if(T.s < course(T.cid).items[T.i].steps.length-1){ await wait(500); if(run!==T.run) return; T.s++; T.k=-1; playStep(); }
+  if(T.s < course(T.cid).items[T.i].steps.length-1){ await wait(300); if(run!==T.run) return; T.s++; T.k=-1; playStep(); }
   else { T.playing=false; T.k=-1; T.end=true; markDone(); renderTeach(); }
 }
 function lLine(line, k){
@@ -2050,7 +2101,7 @@ function openTeach(sec){
         <button class="btn ghost small" id="treplay">Replay step</button>
       </div>
       <div class="chips" data-key="rate"><button class="chip" data-v="normal">Normal speed</button><button class="chip" data-v="slow">Slow</button></div>
-      <p class="hint voiceHint"></p>
+      <div class="voiceHint"></div>
     </article>
     <details class="notes" open><summary>Notes</summary><div id="tnotes"></div></details>`;
   syncChips(); loadVoices(); renderTeach();
