@@ -81,8 +81,6 @@ h2{font-size:22px;margin:0 0 4px;font-weight:800;letter-spacing:-0.01em}
 .btn.small{font-size:15px;padding:9px 14px}
 .hint{color:var(--muted);font-size:14px;margin-top:10px}
 .voiceHint{margin-top:10px}
-.vgender{margin-bottom:8px}
-.vgender .chip{font-size:14px;padding:6px 12px}
 .vbox summary{cursor:pointer;color:var(--muted);font-size:14px}
 .vbox[open] summary{margin-bottom:8px}
 .vrow{display:flex;gap:8px;align-items:flex-end;margin:8px 0}
@@ -1204,16 +1202,16 @@ document.addEventListener("click",e=>{
 const ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/></svg>`;
 const canSpeak = "speechSynthesis" in window;
 let deVoice = null, enVoice = null, allVoices = [];
-let vGender = "male";
-try { vGender = localStorage.getItem("voice:gender") || "male"; } catch(err) {}
-// Voices don't report gender, so guess it from well-known voice names.
-const MALE_V = /\b(male|guy|ryan|thomas|christopher|eric|roger|steffan|andrew|brian|davis|tony|jason|george|david|mark|james|william|liam|conrad|killian|florian|stefan|ralf|kasper|bernd|christoph|daniel|alex|aaron|arthur|tom|oliver|gordon|lee|rishi|evan|nathan|reed|rocko|eddy|grandpa|markus|yannick|viktor|martin|hans|jonas|felix|lukas|noah|oscar|ethan|elliot|alfie)\b/i;
-const FEMALE_V = /\b(female|google deutsch|google us english|woman|zira|hazel|susan|jenny|aria|sonia|libby|mia|natasha|clara|emma|michelle|ana|samantha|karen|moira|tessa|fiona|victoria|kate|serena|martha|allison|ava|katja|hedda|amala|seraphina|louisa|anna|petra|helena|marlene|vicki|gisela|elke|ingrid|nicole|joanna|salli|kimberly|kendra|ivy|amy|olivia|sara|sarah|jessa|ashley|cora|elizabeth|jane|nancy|amber|maisie|bella|hollie|abbi)\b/i;
+const vPitch = {de:1, en:1};
+const LOW_PITCH = 0.7;
+// Voices don't report gender, so guess it from well-known voice names (and Android's voice codes).
+const MALE_V = /\b(male|guy|ryan|thomas|christopher|eric|roger|steffan|andrew|brian|davis|tony|jason|george|david|mark|james|william|liam|conrad|killian|florian|stefan|ralf|kasper|bernd|christoph|daniel|alex|aaron|arthur|tom|oliver|gordon|lee|rishi|evan|nathan|reed|rocko|eddy|grandpa|markus|yannick|viktor|martin|hans|jonas|felix|lukas|noah|oscar|ethan|elliot|alfie)\b|-x-(gbb|gbd|rjs|iol|iom|tpd|deg|aud)-/i;
+const FEMALE_V = /\b(female|google deutsch|google us english|woman|zira|hazel|susan|jenny|aria|sonia|libby|mia|natasha|clara|emma|michelle|ana|samantha|karen|moira|tessa|fiona|victoria|kate|serena|martha|allison|ava|katja|hedda|amala|seraphina|louisa|anna|petra|helena|marlene|vicki|gisela|elke|ingrid|nicole|joanna|salli|kimberly|kendra|ivy|amy|olivia|sara|sarah|jessa|ashley|cora|elizabeth|jane|nancy|amber|maisie|bella|hollie|abbi)\b|-x-(gba|gbc|gbg|iob|iog|sfg|tpc|tpf|deb|dea|nfh|aua|auc)-/i;
 const vGenderOf = v => /female/i.test(v.name) ? "female" : MALE_V.test(v.name) ? "male" : FEMALE_V.test(v.name) ? "female" : "";
-// Score voices so the most natural one wins: cloud/neural voices first, robotic and novelty voices last.
+// Score voices: male first (the learner asked for a male voice), then natural cloud/neural voices; robotic and novelty voices last.
 function voiceScore(v, lang){
   const n=v.name; let sc=0;
-  if(/natural|neural|online|wavenet|studio/i.test(n)) sc+=60;
+  if(/natural|neural|online|wavenet|studio|network/i.test(n)) sc+=60;
   if(/premium|enhanced|siri/i.test(n)) sc+=50;
   if(/google/i.test(n)) sc+=40;
   if(/microsoft/i.test(n) && !/online|natural/i.test(n)) sc-=10;
@@ -1221,20 +1219,32 @@ function voiceScore(v, lang){
   if(/^(Albert|Bad News|Bahh|Bells|Boing|Bubbles|Cellos|Good News|Jester|Organ|Superstar|Trinoids|Whisper|Wobble|Zarvox|Fred|Junior|Ralph|Kathy)\b/i.test(n)) sc-=100;
   if(new RegExp("^"+lang+"[-_]"+(lang==="de"?"DE":"(GB|US)"),"i").test(v.lang)) sc+=15;
   if(v.default) sc+=2;
-  const g=vGenderOf(v); if(g) sc += g===vGender ? 80 : -80;
+  const g=vGenderOf(v); if(g) sc += g==="male" ? 80 : -20;
   return sc;
 }
 const voicesFor = lang => allVoices.filter(v=>new RegExp("^"+lang,"i").test(v.lang)).sort((a,b)=>voiceScore(b,lang)-voiceScore(a,lang));
+// Dropdown choices: every voice, plus a lower-pitched "deeper" version of each voice that isn't male.
+function voiceChoices(lang){
+  const out=[];
+  voicesFor(lang).forEach(v=>{
+    const g=vGenderOf(v);
+    const m=v.name.match(/^([a-z]{2})-([a-z]{2})-x-([a-z]{3})-(local|network)$/i);   // Android voice codes, e.g. en-gb-x-rjs-network
+    const nm = m ? `${m[1].toUpperCase()==="DE"?"German":"English"} (${m[2].toUpperCase()}) voice ${m[3]}${m[4]==="network"?", online":""}` : v.name;
+    out.push({id:v.name, v, pitch:1, label:nm+(g?` (${g})`:"")});
+    if(g!=="male") out.push({id:v.name+"@low", v, pitch:LOW_PITCH, label:nm+", deeper (sounds more male)"});
+  });
+  return out;
+}
 function pickVoice(lang){
-  const vs=voicesFor(lang); let saved=null;
-  try { saved=localStorage.getItem("voice:"+lang); } catch(err) {}
-  return vs.find(v=>v.name===saved) || vs[0] || null;
+  const cs=voiceChoices(lang); let saved=null;
+  try { saved=localStorage.getItem("voicePick:"+lang); } catch(err) {}
+  return cs.find(c=>c.id===saved) || cs.find(c=>vGenderOf(c.v)==="male") || cs.find(c=>c.pitch<1) || cs[0] || null;
 }
 function voiceSelect(lang, cur){
-  const vs=voicesFor(lang);
-  if(!vs.length) return `<p class="hint">No ${lang==="de"?"German":"English"} voice on this device.</p>`;
+  const cs=voiceChoices(lang);
+  if(!cs.length) return `<p class="hint">No ${lang==="de"?"German":"English"} voice on this device.</p>`;
   return `<label class="vpick"><span>${lang==="de"?"German voice":"English voice (Teacher)"}</span>
-    <select class="lsel vsel" data-lang="${lang}">${vs.map(v=>`<option value="${esc(v.name)}"${cur&&v.name===cur.name?" selected":""}>${esc(v.name)} (${esc(v.lang)}${vGenderOf(v)?", "+vGenderOf(v):""})</option>`).join("")}</select></label>
+    <select class="lsel vsel" data-lang="${lang}">${cs.map(c=>`<option value="${esc(c.id)}"${cur&&c.id===cur.id?" selected":""}>${esc(c.label)}</option>`).join("")}</select></label>
     <button class="btn ghost small" data-vtest="${lang}">Test</button>`;
 }
 function loadVoices(){
@@ -1242,39 +1252,32 @@ function loadVoices(){
   if(!canSpeak) html = `<p class="hint">This browser can’t read words aloud. Try Chrome, Edge or Safari.</p>`;
   else {
     allVoices = speechSynthesis.getVoices();
-    deVoice = pickVoice("de"); enVoice = pickVoice("en");
+    const d=pickVoice("de"), e=pickVoice("en");
+    deVoice = d ? d.v : null; vPitch.de = d ? d.pitch : 1;
+    enVoice = e ? e.v : null; vPitch.en = e ? e.pitch : 1;
     if(allVoices.length){
-      const miss = ["de","en"].filter(l=>voicesFor(l).length && !voicesFor(l).some(v=>vGenderOf(v)===vGender));
-      html = `<div class="chips vgender" role="group" aria-label="Voice"><button class="chip" data-vgender="male" aria-pressed="${vGender==="male"}">Male voice</button><button class="chip" data-vgender="female" aria-pressed="${vGender==="female"}">Female voice</button></div>`
-        + (miss.length ? `<p class="hint">No ${vGender} ${miss.map(l=>l==="de"?"German":"English").join(" or ")} voice found on this device, so you’ll hear another one. ${vGender==="male"?"Male voices to look for: “Google UK English Male” in Chrome on a computer, “Microsoft Ryan” or “Guy Online (Natural)” and “Conrad Online (Natural)” in Edge, or “Daniel” and “Markus” on iPhone (Settings › Accessibility › Spoken Content › Voices).":""}</p>` : "")
-        + `<details class="vbox"><summary>Voice: ${deVoice?esc(deVoice.name):"no German voice found"} · change</summary>
-        <div class="vrow">${voiceSelect("de",deVoice)}</div><div class="vrow">${voiceSelect("en",enVoice)}</div>
-        <p class="hint">Voices come from your device. The most natural ones are usually called “Natural”, “Online”, “Premium”, “Enhanced” or “Google”. On iPhone you can download better voices in Settings › Accessibility › Spoken Content › Voices. In Microsoft Edge, the “Online (Natural)” voices sound the most human.</p></details>`;
+      const noMale = ["de","en"].filter(l=>voicesFor(l).length && !voicesFor(l).some(v=>vGenderOf(v)==="male"));
+      html = `<div class="vrow">${voiceSelect("de",d)}</div><div class="vrow">${voiceSelect("en",e)}</div>`
+        + (noMale.length ? `<p class="hint">This device has no male ${noMale.map(l=>l==="de"?"German":"English").join(" or ")} voice, so a “deeper” voice is used instead.</p>` : "")
+        + `<details class="vbox"><summary>How to get more voices</summary><p class="hint">Voices come from your device, not from this app. For a real male voice: on a computer, “Google UK English Male” in Chrome, or “Ryan”, “Guy” and “Conrad Online (Natural)” in Microsoft Edge. On iPhone, download “Daniel” or “Arthur” (English) and “Markus” (German) in Settings › Accessibility › Spoken Content › Voices, then reload this page. On Android, Microsoft Edge offers more voices than Chrome.</p></details>`;
       if(!deVoice) html += `<p class="hint">No German voice found on this device, so words may sound wrong. Add German in your device’s text-to-speech settings.</p>`;
     }
   }
   document.querySelectorAll(".voiceHint").forEach(el=>{ const open=el.querySelector("details[open]"); el.innerHTML=html; if(open) el.querySelector("details")?.setAttribute("open",""); });
 }
+function testVoice(lang){
+  const de=lang==="de", v=de?deVoice:enVoice; if(!v) return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(de ? "Hallo! Ich heiße Markus. Wie heißt du?" : "Hello! I'm your German teacher. Let's start.");
+  u.voice=v; u.lang=v.lang; u.pitch=vPitch[lang]; u.rate=de?(S.rate==="slow"?0.75:1):(S.rate==="slow"?0.85:1.05);
+  speechSynthesis.speak(u);
+}
 document.addEventListener("change",e=>{
   const sel=e.target.closest(".vsel"); if(!sel) return;
-  try { localStorage.setItem("voice:"+sel.dataset.lang, sel.value); } catch(err) {}
-  loadVoices();
+  try { localStorage.setItem("voicePick:"+sel.dataset.lang, sel.value); } catch(err) {}
+  loadVoices(); testVoice(sel.dataset.lang);
 });
-document.addEventListener("click",e=>{
-  const g=e.target.closest("[data-vgender]"); if(!g) return;
-  vGender=g.dataset.vgender;
-  try { localStorage.setItem("voice:gender", vGender); localStorage.removeItem("voice:de"); localStorage.removeItem("voice:en"); } catch(err) {}
-  loadVoices();
-  if(canSpeak && enVoice){ speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance("This is the new voice."); u.voice=enVoice; u.lang=enVoice.lang; speechSynthesis.speak(u); }
-});
-document.addEventListener("click",e=>{
-  const b=e.target.closest("[data-vtest]"); if(!b) return;
-  const de=b.dataset.vtest==="de", v=de?deVoice:enVoice; if(!v) return;
-  speechSynthesis.cancel();
-  const u=new SpeechSynthesisUtterance(de ? "Hallo! Ich heiße Anna. Wie heißt du?" : "Hello! I'm your German teacher. Let's start.");
-  u.voice=v; u.lang=v.lang; u.rate=de?(S.rate==="slow"?0.75:1):(S.rate==="slow"?0.85:1.05);
-  speechSynthesis.speak(u);
-});
+document.addEventListener("click",e=>{ const b=e.target.closest("[data-vtest]"); if(b) testVoice(b.dataset.vtest); });
 if(canSpeak){ loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; } else loadVoices();
 const spoken = w => w.w.replace(/\s*\((.*)\)/, ", $1");
 const full = w => (w.a ? w.a+" " : "") + spoken(w);
@@ -1284,7 +1287,7 @@ function say(text, btn){
   const u = new SpeechSynthesisUtterance(text);
   u.lang = deVoice ? deVoice.lang : "de-DE";
   if(deVoice) u.voice = deVoice;
-  u.rate = S.rate==="slow" ? 0.7 : 1;
+  u.rate = S.rate==="slow" ? 0.7 : 1; u.pitch = vPitch.de;
   if(btn){ btn.classList.add("playing"); u.onend = u.onerror = ()=>btn.classList.remove("playing"); }
   speechSynthesis.speak(u);
 }
@@ -2030,7 +2033,7 @@ function lSpeak(p){
     if(p.pause){ setTimeout(res, p.pause); return; }
     const de = p.lang==="de", v = de ? deVoice : enVoice, u = new SpeechSynthesisUtterance(de ? p.text : p.text.replace(/’/g,"'"));
     u.lang = v ? v.lang : (de ? "de-DE" : "en-GB"); if(v) u.voice = v;
-    u.rate = de ? (S.rate==="slow" ? 0.75 : 1) : (S.rate==="slow" ? 0.85 : 1.05);
+    u.rate = de ? (S.rate==="slow" ? 0.75 : 1) : (S.rate==="slow" ? 0.85 : 1.05); u.pitch = vPitch[de ? "de" : "en"];
     let done = false; const fin = () => { if(!done){ done = true; res(); } };
     u.onend = u.onerror = fin; T.u = u;
     setTimeout(fin, 4000 + p.text.length * 160);   // safety net for browsers that never fire onend
